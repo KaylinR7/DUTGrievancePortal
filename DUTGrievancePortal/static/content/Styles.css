@@ -1,0 +1,429 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+}
+
+    header h1 {
+        margin: 0;
+        font-size: 2em;
+    }
+
+nav {
+    background-color: #0056b3;
+    padding: 10px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+    nav a {
+        color: white;
+        text-decoration: none;
+        margin: 0 10px;
+        font-size: 1.1em;
+    }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+.user-info {
+    font-weight: bold;
+}
+
+.notification-badge {
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.8em;
+    margin-left: 5px;
+}
+
+/* Flash Messages */
+.flash-messages {
+    margin: 10px;
+}
+
+.alert {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Form Styles */
+.form-container {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+/* Dashboard Styles */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.quick-actions {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.action-card {
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 30%;
+    text-decoration: none;
+    color: #333;
+}
+
+    .action-card:hover {
+        background-color: #f4f4f4;
+    }
+
+.complaints-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+    .complaints-table th, .complaints-table td {
+        padding: 10px;
+        border: 1px solid #ccc;
+        text-align: left;
+    }
+
+    .complaints-table th {
+        background-color: #007bff;
+        color: white;
+    }
+
+/* Notifications Page */
+.notifications-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.notifications-list {
+    list-style: none;
+    padding: 0;
+}
+
+.notification-item {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .notification-item.unread {
+        background-color: #f4f4f4;
+    }
+
+.notification-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* FAQs and Contact Pages */
+.faqs-container, .contact-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+    .faqs-container h2, .contact-container h2 {
+        margin-bottom: 20px;
+    }
+
+/* Hero Section (Index Page) */
+.hero-section {
+    background-color: #007bff;
+    color: white;
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.hero-content h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.hero-description {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+}
+
+.cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.cta-button {
+    padding: 10px 20px;
+    background-color: white;
+    color: #007bff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    text-decoration: none;
+}
+
+    .cta-button:hover {
+        background-color: #f4f4f4;
+    }
+
+    .cta-button.secondary {
+        background-color: transparent;
+        border: 2px solid white;
+        color: white;
+    }
+
+        .cta-button.secondary:hover {
+            background-color: white;
+            color: #007bff;
+        }
+
+/* Feature Cards (Index Page) */
+.portal-features {
+    display: flex;
+    justify-content: space-around;
+    margin: 50px 0;
+}
+
+.feature-card {
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 30%;
+    background-color: white;
+}
+
+    .feature-card h3 {
+        font-size: 1.5em;
+        margin-bottom: 10px;
+    }
+
+    .feature-card p {
+        font-size: 1.1em;
+        color: #666;
+    }
+/* Back Button */
+.btn-back {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 15px;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+    .btn-back:hover {
+        background-color: #5a6268;
+    }
+
+/* No Complaints Message */
+.no-complaints {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+}
+
+/* Complaints Container */
+.complaints-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Complaint Details Page */
+.complaint-details {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.complaint-info p {
+    margin: 10px 0;
+    font-size: 1.1em;
+}
+
+.complaint-info strong {
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Back Button */
+.btn-back {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 15px;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+    .btn-back:hover {
+        background-color: #5a6268;
+    }
+
+/* FAQs Page */
+.faq-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.faq-list {
+    margin-top: 20px;
+}
+
+.faq-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+    .faq-item h3 {
+        margin-top: 0;
+        color: #007bff;
+    }
+
+    .faq-item p {
+        margin: 10px 0 0;
+        color: #333;
+    }
+
+/* Contact Page */
+.contact-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.contact-info {
+    margin-top: 20px;
+}
+
+    .contact-info p {
+        margin: 10px 0;
+        color: #333;
+    }
+
+    .contact-info ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+        .contact-info ul li {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+            .contact-info ul li strong {
+                color: #007bff;
+            }
+

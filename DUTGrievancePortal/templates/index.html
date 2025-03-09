@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1>Welcome to DUT Grievance Portal</h1>
+        <p class="hero-description">
+            This platform allows Durban University of Technology students and staff to
+            efficiently submit and track formal complaints. Our system ensures transparent
+            resolution processes with 72-hour response guarantees.
+        </p>
+        <div class="hero-cta">
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('main.submit_complaint') }}" class="cta-button">File a Complaint</a>
+            {% else %}
+            <div class="cta-group">
+                <a href="{{ url_for('main.register') }}" class="cta-button">Get Started</a>
+                <a href="{{ url_for('main.login') }}" class="cta-button secondary">Login</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<section class="portal-features">
+    <div class="feature-card">
+        <h3> Submit Complaints</h3>
+        <p>Easily file grievances with categorized submission forms</p>
+    </div>
+    <div class="feature-card">
+        <h3>72-Hour Response</h3>
+        <p>Guaranteed staff response within three working days</p>
+    </div>
+    <div class="feature-card">
+        <h3>Complaint Tracking</h3>
+        <p>Real-time updates and history of all your submissions</p>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="complaints-container">
+    <h2>Complaint History</h2>
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-back">← Back to Dashboard</a>
+
+    {% if complaints %}
+    <table class="complaints-table">
+        <thead>
+            <tr>
+                <th>Reference ID</th>
+                <th>Category</th>
+                <th>Sub-topic</th>
+                <th>Status</th>
+                <th>Time Left to Respond</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for complaint in complaints %}
+            {% set deadline = complaint.created_at + timedelta(hours=72) %}
+            <tr>
+                <td>{{ complaint.reference_id }}</td>
+                <td>{{ complaint.category|title }}</td>
+                <td>{{ complaint.sub_topic|replace('_', ' ')|title if complaint.sub_topic }}</td>
+                <td>{{ complaint.status }}</td>
+                <td>
+                    <span class="countdown" data-deadline="{{ deadline.strftime('%Y-%m-%d %H:%M:%S') }}"></span>
+                </td>
+                <td><a href="{{ url_for('main.view_complaint', id=complaint.id) }}">View Details</a></td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="no-complaints">No complaint history found.</p>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    function updateCountdowns() {
+        let elements = document.querySelectorAll(".countdown");
+        elements.forEach(el => {
+            let deadline = new Date(el.getAttribute("data-deadline")).getTime();
+            let now = new Date().getTime();
+            let timeLeft = deadline - now;
+
+            if (timeLeft > 0) {
+                let hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                el.innerHTML = `${hours}h ${minutes}m left`;
+            } else {
+                el.innerHTML = "<span style='color: red;'>Time Expired</span>";
+            }
+        });
+    }
+
+    updateCountdowns();
+    setInterval(updateCountdowns, 60000); // Update every minute
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>d6ecac6a-7e60-4c38-89b4-f62eb8fbbf0b</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <ProjectTypeGuids>{789894c7-04a9-4a11-a6b5-3f4435165112};{1b580a1a-fdb3-4b32-83e1-6407eb2722e6};{349c5851-65df-11da-9384-00065b846f21};{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <StartupFile>run.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <LaunchProvider>Web launcher</LaunchProvider>
+    <WebBrowserUrl>http://localhost</WebBrowserUrl>
+    <OutputPath>.</OutputPath>
+    <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
+    <Name>DUTGrievancePortal</Name>
+    <RootNamespace>DUTGrievancePortal</RootNamespace>
+    <InterpreterId>MSBuild|venv|$(MSBuildProjectFullPath)</InterpreterId>
+    <SuppressPackageInstallationPrompt>True</SuppressPackageInstallationPrompt>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="DUTGrievancePortal\config.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTGrievancePortal\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTGrievancePortal\models.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTGrievancePortal\routes.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTGrievancePortal\utils.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="init_db.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="run.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="runserver.py" />
+    <Compile Include="DUTGrievancePortal\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DUTGrievancePortal\" />
+    <Folder Include="DUTGrievancePortal\static\" />
+    <Folder Include="DUTGrievancePortal\static\content\" />
+    <Folder Include="DUTGrievancePortal\static\fonts\" />
+    <Folder Include="DUTGrievancePortal\static\scripts\" />
+    <Folder Include="DUTGrievancePortal\templates\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DUTGrievancePortal\static\content\Styles.css" />
+    <Content Include="DUTGrievancePortal\templates\base.html" />
+    <Content Include="DUTGrievancePortal\templates\complaint.html" />
+    <Content Include="DUTGrievancePortal\templates\complaint_history.html" />
+    <Content Include="DUTGrievancePortal\templates\current_complaints.html" />
+    <Content Include="DUTGrievancePortal\templates\dashboard.html" />
+    <Content Include="DUTGrievancePortal\templates\faqs.html" />
+    <Content Include="DUTGrievancePortal\templates\login.html" />
+    <Content Include="DUTGrievancePortal\templates\Notifications.html" />
+    <Content Include="DUTGrievancePortal\templates\register.html" />
+    <Content Include="DUTGrievancePortal\templates\view_complaint.html" />
+    <Content Include="DUTGrievancePortal\templates\welcome.html" />
+    <Content Include="requirements.txt" />
+    <Content Include="DUTGrievancePortal\static\content\bootstrap.css" />
+    <Content Include="DUTGrievancePortal\static\content\bootstrap.min.css" />
+    <Content Include="DUTGrievancePortal\static\content\site.css" />
+    <Content Include="DUTGrievancePortal\static\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="DUTGrievancePortal\static\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="DUTGrievancePortal\static\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="DUTGrievancePortal\static\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="DUTGrievancePortal\static\scripts\bootstrap.js" />
+    <Content Include="DUTGrievancePortal\static\scripts\bootstrap.min.js" />
+    <Content Include="DUTGrievancePortal\static\scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="DUTGrievancePortal\static\scripts\jquery-1.10.2.js" />
+    <Content Include="DUTGrievancePortal\static\scripts\jquery-1.10.2.min.js" />
+    <Content Include="DUTGrievancePortal\static\scripts\jquery-1.10.2.min.map" />
+    <Content Include="DUTGrievancePortal\static\scripts\jquery.validate-vsdoc.js" />
+    <Content Include="DUTGrievancePortal\static\scripts\jquery.validate.js" />
+    <Content Include="DUTGrievancePortal\static\scripts\jquery.validate.min.js" />
+    <Content Include="DUTGrievancePortal\static\scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="DUTGrievancePortal\static\scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="DUTGrievancePortal\static\scripts\modernizr-2.6.2.js" />
+    <Content Include="DUTGrievancePortal\static\scripts\respond.js" />
+    <Content Include="DUTGrievancePortal\static\scripts\respond.min.js" />
+    <Content Include="DUTGrievancePortal\static\scripts\_references.js" />
+    <Content Include="DUTGrievancePortal\templates\about.html" />
+    <Content Include="DUTGrievancePortal\templates\contact.html" />
+    <Content Include="DUTGrievancePortal\templates\index.html" />
+    <Content Include="DUTGrievancePortal\templates\layout.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="venv\">
+      <Id>venv</Id>
+      <Version>0.0</Version>
+      <Description>venv (Python 3.12 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Web.targets" />
+  <!-- Specify pre- and post-build commands in the BeforeBuild and 
+       AfterBuild targets below. -->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <AutoAssignPort>True</AutoAssignPort>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

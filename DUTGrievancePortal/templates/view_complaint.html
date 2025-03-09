@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="complaint-details">
+    <h2>Complaint Details</h2>
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-back">← Back to Dashboard</a>
+
+    <div class="complaint-info">
+        <p><strong>Reference ID:</strong> {{ complaint.reference_id }}</p>
+        <p><strong>Category:</strong> {{ complaint.category|title }}</p>
+        <p><strong>Sub-topic:</strong> {{ complaint.sub_topic|replace('_', ' ')|title if complaint.sub_topic }}</p>
+        <p><strong>Subject:</strong> {{ complaint.subject_line }}</p>
+        <p><strong>Description:</strong> {{ complaint.description }}</p>
+        <p><strong>Status:</strong> {{ complaint.status }}</p>
+        <p><strong>Date Submitted:</strong> {{ complaint.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+
+        <p>
+            <strong>Time Left to Respond:</strong>
+            <span class="countdown" data-deadline="{{ deadline.strftime('%Y-%m-%d %H:%M:%S') }}"></span>
+        </p>
+
+        {% if complaint.attachment_path %}
+        <p><strong>Attachment:</strong> <a href="{{ url_for('static', filename=complaint.attachment_path) }}" target="_blank">View Attachment</a></p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function updateCountdowns() {
+            let elements = document.querySelectorAll(".countdown");
+            elements.forEach(el => {
+                let deadline = new Date(el.getAttribute("data-deadline")).getTime();
+                let now = new Date().getTime();
+                let timeLeft = deadline - now;
+
+                if (timeLeft > 0) {
+                    let hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                    let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    el.innerHTML = `${hours}h ${minutes}m left`;
+                } else {
+                    el.innerHTML = "<span style='color: red;'>Time Expired</span>";
+                }
+            });
+        }
+
+        updateCountdowns();
+        setInterval(updateCountdowns, 60000); // Update every minute
+    });
+</script>
+{% endblock %}

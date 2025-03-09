@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="complaint-container">
+    <h2>Submit New Complaint</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.category.label }}
+            {{ form.category(class="form-control") }}
+            {% for error in form.category.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group" id="sub-topic-group">
+            {{ form.sub_topic.label }}
+            {{ form.sub_topic(class="form-control") }}
+            {% for error in form.sub_topic.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group" id="subject-line-group">
+            {{ form.subject_line.label }}
+            {{ form.subject_line(class="form-control") }}
+            {% for error in form.subject_line.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.description.label }}
+            {{ form.description(class="form-control", rows=5) }}
+            {% for error in form.description.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.attachment.label }}
+            {{ form.attachment(class="form-control-file") }}
+            {% for error in form.attachment.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+</div>
+
+<script>
+    document.getElementById('category').addEventListener('change', function () {
+        const category = this.value;
+        const subTopicSelect = document.getElementById('sub_topic');
+
+        // Clear existing options
+        subTopicSelect.innerHTML = '';
+
+        // Define sub-topics structure
+        const subTopics = {
+            academics: [
+                ['academics_registration', 'Registration Issues'],
+                ['academics_results', 'Exam Results']
+            ],
+            faculty: [
+                ['faculty_teaching', 'Teaching Quality'],
+                ['faculty_resources', 'Faculty Resources']
+            ],
+            maintenance: [
+                ['maintenance_cleaning', 'Cleaning Services'],
+                ['maintenance_infrastructure', 'Building Issues']
+            ],
+            health_safety: [
+                ['health_safety_emergency', 'Emergency Response'],
+                ['health_safety_facilities', 'Safety Facilities']
+            ],
+            general: []
+        };
+
+        // Add new options
+        if (category && category !== 'general') {
+            subTopics[category].forEach(([value, text]) => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = text;
+                subTopicSelect.appendChild(option);
+            });
+            document.getElementById('sub-topic-group').style.display = 'block';
+        } else {
+            document.getElementById('sub-topic-group').style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}
