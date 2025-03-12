@@ -259,7 +259,6 @@ def faqs():
 def contact():
     return render_template('contact.html')
 
-# Staff routes
 @staff_bp.route('/dashboard')
 @login_required
 def staff_dashboard():
@@ -272,11 +271,15 @@ def staff_dashboard():
     resolved_complaints = Complaint.query.filter_by(status='Resolved').count()
     in_progress_complaints = Complaint.query.filter_by(status='In Progress').count()
     
+    # Get the first new complaint (if any)
+    first_new_complaint = Complaint.query.filter_by(status='Pending').first()
+    
     return render_template(
         'staff_dashboard.html',
         new_complaints=new_complaints,
         resolved_complaints=resolved_complaints,
-        in_progress_complaints=in_progress_complaints
+        in_progress_complaints=in_progress_complaints,
+        complaint=first_new_complaint  # Pass the first new complaint (may be None)
     )
 
 @staff_bp.route('/complaints')
@@ -298,6 +301,8 @@ def staff_history():
     
     resolved_complaints = Complaint.query.filter_by(status='Resolved').all()
     return render_template('staff_history.html', complaints=resolved_complaints)
+
+
 @staff_bp.route('/respond-to-complaint/<int:complaint_id>', methods=['GET', 'POST'])
 @login_required
 def staff_respond_to_complaint(complaint_id):
