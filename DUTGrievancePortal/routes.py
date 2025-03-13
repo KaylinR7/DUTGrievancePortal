@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, app, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_user, logout_user, current_user, login_required
 from .extensions import db, login_manager  # Import from extensions.py
-from .models import User, Complaint, Notification
+from .models import Feedback, User, Complaint, Notification
 from .forms import ComplaintForm, RegistrationForm, LoginForm
 from datetime import datetime, timedelta
 from .utils import generate_reference_id, create_notification
@@ -340,4 +340,34 @@ def logout():
     return redirect(url_for('main.index'))
 
 
+@main_bp.route('/submit-feedback', methods=['POST'])
+def submit_feedback():
+    rating = request.form.get('rating')
+    comments = request.form.get('comments')
+    complaint_id = request.form.get('complaint_id')
+    user_id = request.form.get('user_id')
 
+    if not rating:
+        flash("Please select a rating!", "error")
+        return redirect(url_for('feedback_form'))  # Redirect back to form if no rating
+
+    feedback = Feedback(
+        complaint_id=complaint_id,
+        user_id=user_id,
+        rating=int(rating),
+        comments=comments
+    )
+
+    db.session.add(feedback)
+    db.session.commit()
+    
+    flash("Feedback submitted successfully!", "success")
+    return redirect(url_for('feedback_form'))  # Redirect to the feedback page
+
+@main_bp.route('/feedback')
+def feedback_form():
+    return render_template('rating.html')
+
+if __name__ == '__main__':
+    db.create_all()
+    app.run(debug=True)

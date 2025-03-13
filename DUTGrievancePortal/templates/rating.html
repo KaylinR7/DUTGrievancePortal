@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Submit Feedback</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .rating-container {
+            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+
+        .rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+            .rating input {
+                display: none;
+            }
+
+            .rating label {
+                cursor: pointer;
+                color: #ccc;
+                transition: color 0.3s;
+            }
+
+                .rating input:checked ~ label,
+                .rating label:hover,
+                .rating label:hover ~ label {
+                    color: gold;
+                }
+
+        textarea {
+            width: 80%;
+            height: 100px;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+            button[type="submit"]:hover {
+                background-color: #45a049;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="rating-container">
+        <h2>Submit Your Feedback</h2>
+        <form action="/submit-feedback" method="POST">
+            <div class="rating">
+                <input type="radio" id="star5" name="rating" value="5">
+                <label for="star5">&#9733;</label>
+
+                <input type="radio" id="star4" name="rating" value="4">
+                <label for="star4">&#9733;</label>
+
+                <input type="radio" id="star3" name="rating" value="3">
+                <label for="star3">&#9733;</label>
+
+                <input type="radio" id="star2" name="rating" value="2">
+                <label for="star2">&#9733;</label>
+
+                <input type="radio" id="star1" name="rating" value="1">
+                <label for="star1">&#9733;</label>
+            </div>
+
+            <textarea name="comments" placeholder="Leave a comment (optional)"></textarea>
+
+            <input type="hidden" name="complaint_id" value="1"> <!-- Dynamically populate this -->
+            <input type="hidden" name="user_id" value="1"> <!-- Dynamically populate this -->
+
+            <button type="submit">Submit Rating</button>
+        </form>
+    </div>
+
+</body>
+</html>

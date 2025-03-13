@@ -71,6 +71,7 @@
     <Content Include="DUTGrievancePortal\templates\faqs.html" />
     <Content Include="DUTGrievancePortal\templates\login.html" />
     <Content Include="DUTGrievancePortal\templates\Notifications.html" />
+    <Content Include="DUTGrievancePortal\templates\rating.html" />
     <Content Include="DUTGrievancePortal\templates\register.html" />
     <Content Include="DUTGrievancePortal\templates\view_complaint.html" />
     <Content Include="DUTGrievancePortal\templates\welcome.html" />

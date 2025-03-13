@@ -49,6 +49,9 @@
         {{ form.submit(class="btn btn-primary") }}
     </form>
 </div>
+<div class="text-center mt-4">
+    <a href="{{ url_for('rating') }}" class="btn btn-secondary">Rate Your Experience</a>
+</div>
 
 <script>
     document.getElementById('category').addEventListener('change', function () {
