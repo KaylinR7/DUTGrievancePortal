@@ -62,6 +62,9 @@
     </Compile>
     <Compile Include="runserver.py" />
     <Compile Include="DUTGrievancePortal\__init__.py" />
+    <Compile Include="wsgi.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DUTGrievancePortal\" />
