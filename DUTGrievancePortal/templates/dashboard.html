@@ -2,42 +2,72 @@
 
 {% block content %}
 <div class="dashboard-container">
-    <h2>Welcome, {{ current_user.student_staff_number }} ({{ current_user.email }})</h2>
-
-    <!-- Notification Badge -->
-    <div class="notification-badge">
-        <a href="{{ url_for('main.notifications') }}">
-            Notifications
-            {% if notification_count > 0 %}
-            <span class="badge">{{ notification_count }}</span>
-            {% endif %}
-        </a>
+    <div style="display: flex; flex-direction: column; margin-bottom: 2rem;">
+        <h1 style="font-size: 1.875rem; font-weight: 600; margin-bottom: 0.5rem;">Dashboard</h1>
+        <p style="color: var(--muted-foreground);">
+            Welcome, {{ current_user.student_staff_number }} ({{ current_user.email }})
+        </p>
     </div>
 
-    <!-- Quick Action Cards -->
     <div class="quick-actions">
         <!-- File New Complaint -->
         <a href="{{ url_for('main.submit_complaint') }}" class="action-card">
+            <div style="background-color: var(--primary-light); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
+                <i class="fas fa-file-alt" style="font-size: 1.5rem; color: var(--primary);"></i>
+            </div>
             <h3>File New Complaint</h3>
             <p>Start a new grievance process</p>
+            <div style="margin-top: 1rem; text-align: center;">
+                <span class="btn btn-primary">Submit Complaint</span>
+            </div>
         </a>
 
         <!-- Track Current Complaints -->
         <a href="{{ url_for('main.current_complaints') }}" class="action-card">
+            <div style="background-color: var(--primary-light); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
+                <i class="fas fa-clock" style="font-size: 1.5rem; color: var(--primary);"></i>
+            </div>
             <h3>Track Current Complaints</h3>
             <p>View unresolved complaints</p>
+            <div style="margin-top: 1rem; text-align: center;">
+                <span class="btn btn-outline">View Current</span>
+            </div>
         </a>
 
         <!-- Complaint History -->
         <a href="{{ url_for('main.complaint_history') }}" class="action-card">
+            <div style="background-color: var(--primary-light); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
+                <i class="fas fa-history" style="font-size: 1.5rem; color: var(--primary);"></i>
+            </div>
             <h3>Complaint History</h3>
             <p>View all past complaints</p>
+            <div style="margin-top: 1rem; text-align: center;">
+                <span class="btn btn-outline">View History</span>
+            </div>
         </a>
     </div>
 
-    <!-- Status Message -->
-    <div class="status-message">
-        <p>Select an action above to manage your complaints.</p>
+    <div class="card" style="margin-top: 2rem;">
+        <div class="card-header">
+            <h2 class="card-title">Quick Status</h2>
+            <p class="card-description">Overview of your complaints</p>
+        </div>
+        <div class="card-content">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div style="border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">2</div>
+                    <div style="color: var(--muted-foreground); font-size: 0.875rem;">Active Complaints</div>
+                </div>
+                <div style="border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">5</div>
+                    <div style="color: var(--muted-foreground); font-size: 0.875rem;">Total Submitted</div>
+                </div>
+                <div style="border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">3</div>
+                    <div style="color: var(--muted-foreground); font-size: 0.875rem;">Resolved</div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
