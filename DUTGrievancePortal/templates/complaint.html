@@ -1,62 +1,81 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="complaint-container">
-    <h2>Submit New Complaint</h2>
-    <form method="POST" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+    <div class="card-header">
+        <h2 class="card-title">Submit New Complaint</h2>
+        <p class="card-description">Fill out the form below to submit a new complaint or grievance</p>
+    </div>
+    <div class="card-content">
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
 
-        <div class="form-group">
-            {{ form.category.label }}
-            {{ form.category(class="form-control") }}
-            {% for error in form.category.errors %}
-            <span class="text-danger">{{ error }}</span>
-            {% endfor %}
-        </div>
+            <div class="form-group">
+                {{ form.category.label }}
+                <span style="color: var(--destructive);">*</span>
+                {{ form.category(class="form-control") }}
+                {% for error in form.category.errors %}
+                <span style="color: var(--destructive); font-size: 0.875rem;">{{ error }}</span>
+                {% endfor %}
+            </div>
 
-        <div class="form-group" id="sub-topic-group">
-            {{ form.sub_topic.label }}
-            {{ form.sub_topic(class="form-control") }}
-            {% for error in form.sub_topic.errors %}
-            <span class="text-danger">{{ error }}</span>
-            {% endfor %}
-        </div>
+            <div class="form-group" id="sub-topic-group" style="display: none;">
+                {{ form.sub_topic.label }}
+                <span style="color: var(--destructive);">*</span>
+                {{ form.sub_topic(class="form-control") }}
+                {% for error in form.sub_topic.errors %}
+                <span style="color: var(--destructive); font-size: 0.875rem;">{{ error }}</span>
+                {% endfor %}
+            </div>
 
-        <div class="form-group" id="subject-line-group">
-            {{ form.subject_line.label }}
-            {{ form.subject_line(class="form-control") }}
-            {% for error in form.subject_line.errors %}
-            <span class="text-danger">{{ error }}</span>
-            {% endfor %}
-        </div>
+            <div class="form-group" id="subject-line-group">
+                {{ form.subject_line.label }}
+                <span style="color: var(--destructive);">*</span>
+                {{ form.subject_line(class="form-control", placeholder="Brief title of your complaint") }}
+                {% for error in form.subject_line.errors %}
+                <span style="color: var(--destructive); font-size: 0.875rem;">{{ error }}</span>
+                {% endfor %}
+            </div>
 
-        <div class="form-group">
-            {{ form.description.label }}
-            {{ form.description(class="form-control", rows=5) }}
-            {% for error in form.description.errors %}
-            <span class="text-danger">{{ error }}</span>
-            {% endfor %}
-        </div>
+            <div class="form-group">
+                {{ form.description.label }}
+                <span style="color: var(--destructive);">*</span>
+                {{ form.description(class="form-control", rows=5, placeholder="Provide detailed information about your complaint") }}
+                {% for error in form.description.errors %}
+                <span style="color: var(--destructive); font-size: 0.875rem;">{{ error }}</span>
+                {% endfor %}
+            </div>
 
-        <div class="form-group">
-            {{ form.attachment.label }}
-            {{ form.attachment(class="form-control-file") }}
-            {% for error in form.attachment.errors %}
-            <span class="text-danger">{{ error }}</span>
-            {% endfor %}
-        </div>
+            <div class="form-group">
+                {{ form.attachment.label }} (Optional)
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    {{ form.attachment(class="form-control-file", style="display: none;", id="file-input") }}
+                    <button type="button" class="btn btn-outline" onclick="document.getElementById('file-input').click();" style="flex: 1;">
+                        <i class="fas fa-upload"></i>
+                        <span id="file-name">Choose file</span>
+                    </button>
+                    <button type="button" id="clear-file" class="btn btn-outline" style="display: none;">
+                        Clear
+                    </button>
+                </div>
+                <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.5rem;">
+                    Supported formats: PDF, DOC, JPG, PNG (max 5MB)
+                </p>
+                {% for error in form.attachment.errors %}
+                <span style="color: var(--destructive); font-size: 0.875rem;">{{ error }}</span>
+                {% endfor %}
+            </div>
 
-        {{ form.submit(class="btn btn-primary") }}
-    </form>
-</div>
-<div class="text-center mt-4">
-    <a href="{{ url_for('rating') }}" class="btn btn-secondary">Rate Your Experience</a>
+            {{ form.submit(class="btn btn-primary", style="width: 100%;") }}
+        </form>
+    </div>
 </div>
 
 <script>
     document.getElementById('category').addEventListener('change', function () {
         const category = this.value;
         const subTopicSelect = document.getElementById('sub_topic');
+        const subTopicGroup = document.getElementById('sub-topic-group');
 
         // Clear existing options
         subTopicSelect.innerHTML = '';
@@ -82,7 +101,6 @@
             general: []
         };
 
-        // Add new options
         if (category && category !== 'general') {
             subTopics[category].forEach(([value, text]) => {
                 const option = document.createElement('option');
@@ -90,10 +108,31 @@
                 option.textContent = text;
                 subTopicSelect.appendChild(option);
             });
-            document.getElementById('sub-topic-group').style.display = 'block';
+            subTopicGroup.style.display = 'block';
+            // Add animation
+            subTopicGroup.style.animation = 'slideInFromTop 0.3s ease-out';
         } else {
-            document.getElementById('sub-topic-group').style.display = 'none';
+            subTopicGroup.style.display = 'none';
         }
+    });
+
+    // File input handling
+    document.getElementById('file-input').addEventListener('change', function () {
+        const fileName = this.files[0] ? this.files[0].name : 'Choose file';
+        document.getElementById('file-name').textContent = fileName;
+
+        if (this.files[0]) {
+            document.getElementById('clear-file').style.display = 'block';
+        } else {
+            document.getElementById('clear-file').style.display = 'none';
+        }
+    });
+
+    document.getElementById('clear-file').addEventListener('click', function () {
+        const fileInput = document.getElementById('file-input');
+        fileInput.value = '';
+        document.getElementById('file-name').textContent = 'Choose file';
+        this.style.display = 'none';
     });
 </script>
 {% endblock %}
