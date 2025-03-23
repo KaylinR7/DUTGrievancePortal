@@ -1,39 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, SubmitField, PasswordField, TextAreaField  # Added TextAreaField
-from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
+from wtforms import StringField, SelectField, SubmitField, PasswordField, TextAreaField, BooleanField, IntegerField
+from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
 from flask_wtf.file import FileField, FileAllowed
-import re
-
-class RegistrationForm(FlaskForm):
-    email = StringField('University Email', validators=[
-        DataRequired(), 
-        Email(),
-        Length(max=255)
-    ])
-    student_staff_number = StringField('Student/Staff Number', validators=[
-        DataRequired(),
-        Length(min=8, max=8)
-    ])
-    password = PasswordField('Password', validators=[
-        DataRequired(),
-        Length(min=8)
-    ])
-    confirm_password = PasswordField('Confirm Password', validators=[
-        DataRequired(),
-        EqualTo('password')
-    ])
-    submit = SubmitField('Register')
-
-    def validate_email(self, email):
-        if not email.data.endswith('@dut4life.ac.za'):
-            raise ValidationError('You must use your university email address (@dut4life.ac.za)')
-        
-    def validate_student_staff_number(self, field):
-        if not field.data.isdigit():
-            raise ValidationError('Student/Staff number must contain only digits')
 
 class LoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Email()])
+    student_staff_number = StringField('Student/Staff Number', 
+                                     validators=[DataRequired(), Length(min=4, max=8)])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
@@ -48,11 +20,60 @@ class ComplaintForm(FlaskForm):
     ], validators=[DataRequired()])
     
     sub_topic = SelectField('Sub-topic', choices=[], validate_choice=False)
-    # ... rest of the form ...
-    
-    subject_line = StringField('Subject Line')
+    subject_line = StringField('Subject Line', validators=[DataRequired()])
     description = TextAreaField('Complaint Details', validators=[DataRequired()])
     attachment = FileField('Attachment (optional)', validators=[
         FileAllowed(['pdf', 'doc', 'docx', 'jpg', 'png'], 'Allowed formats: PDF, DOC, JPG, PNG')
     ])
     submit = SubmitField('Submit')
+
+class EditUserForm(FlaskForm):
+    student_staff_number = StringField('Student/Staff Number', validators=[DataRequired(), Length(min=4, max=8)])
+    is_staff = BooleanField('Is Staff')
+
+class EditComplaintForm(FlaskForm):
+    category = StringField('Category', validators=[DataRequired()])
+    sub_topic = StringField('Sub Topic', validators=[DataRequired()])
+    subject_line = StringField('Subject Line', validators=[DataRequired()])
+    description = TextAreaField('Description', validators=[DataRequired()])
+    user_id = IntegerField('User ID', validators=[DataRequired()])
+    status = SelectField('Status', choices=[('Pending', 'Pending'), ('In Progress', 'In Progress'), ('Resolved', 'Resolved')])
+
+class EditNotificationForm(FlaskForm):
+    user_id = IntegerField('User ID', validators=[DataRequired()])
+    message = StringField('Message', validators=[DataRequired()])
+    is_read = BooleanField('Is Read')
+
+class AddUserForm(FlaskForm):
+    student_staff_number = StringField('Student/Staff Number', validators=[DataRequired(), Length(min=4, max=8)])
+    is_staff = BooleanField('Is Staff')
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
+
+class AddComplaintForm(FlaskForm):
+    category = StringField('Category', validators=[DataRequired()])
+    sub_topic = StringField('Sub Topic', validators=[DataRequired()])
+    subject_line = StringField('Subject Line', validators=[DataRequired()])
+    description = TextAreaField('Description', validators=[DataRequired()])
+    user_id = IntegerField('User ID', validators=[DataRequired()])
+
+class AddNotificationForm(FlaskForm):
+    user_id = IntegerField('User ID', validators=[DataRequired()])
+    message = StringField('Message', validators=[DataRequired()])
+    is_read = BooleanField('Is Read')
+
+class ComplaintFeedbackForm(FlaskForm):
+    rating = SelectField(
+        'How satisfied are you with the resolution of your complaint?',
+        choices=[
+            (5, 'Very Satisfied'),
+            (4, 'Satisfied'),
+            (3, 'Neutral'),
+            (2, 'Unsatisfied'),
+            (1, 'Very Unsatisfied')
+        ],
+        coerce=int,
+        validators=[DataRequired()]
+    )
+    comments = TextAreaField('Additional Comments', validators=[Length(max=500)])
+    submit = SubmitField('Submit Feedback')
+

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-container">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Provide Feedback</h2>
+            <p class="card-description">Let us know how satisfied you are with the resolution of your complaint</p>
+        </div>
+        <div class="card-content">
+            <div class="complaint-summary" style="margin-bottom: 1.5rem; padding: 1rem; background-color: var(--accent); border-radius: var(--radius);">
+                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">Complaint Summary</h3>
+                <p><strong>Reference ID:</strong> {{ complaint.reference_id }}</p>
+                <p><strong>Subject:</strong> {{ complaint.subject_line }}</p>
+                <p><strong>Status:</strong> <span class="badge {% if complaint.status == 'Resolved' %}badge-green{% elif complaint.status == 'In Progress' %}badge-blue{% else %}badge-yellow{% endif %}">{{ complaint.status }}</span></p>
+
+                {% for update in complaint.updates %}
+                <div style="margin-top: 0.5rem;">
+                    <p><strong>Latest Response:</strong> {{ update.update_text }}</p>
+                    <p style="font-size: 0.75rem; color: var(--muted-foreground);">
+                        By {{ update.updated_by }} on {{ update.update_time.strftime('%Y-%m-%d %H:%M') }}
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="form-group">
+                    <label>{{ form.rating.label }}</label>
+                    <select name="{{ form.rating.name }}" class="form-control">
+                        {% for value, label in form.rating.choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    {% for error in form.rating.errors %}
+                    <span style="color: var(--destructive); font-size: 0.875rem;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.comments.label }}
+                    {{ form.comments(class="form-control", rows=4, placeholder="Please provide any additional comments about the resolution of your complaint") }}
+                    {% for error in form.comments.errors %}
+                    <span style="color: var(--destructive); font-size: 0.875rem;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    {{ form.submit(class="btn btn-primary", style="flex: 1;") }}
+                    <a href="{{ url_for('main.view_complaint', id=complaint.id) }}" class="btn btn-outline" style="flex: 1;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

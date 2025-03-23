@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Portal - DUT Grievance System</title>
+    <link href="{{ url_for('static', filename='content/Staff.css') }}" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <span>DUT Staff Portal</span>
+                </div>
+            </div>
+
+            <div class="sidebar-content">
+                <ul class="sidebar-menu">
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('staff.staff_dashboard') }}" class="sidebar-menu-link {% if request.path == url_for('staff.staff_dashboard') %}active{% endif %}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('staff.staff_complaints') }}" class="sidebar-menu-link {% if request.path == url_for('staff.staff_complaints') %}active{% endif %}">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Pending Complaints</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('staff.complaints_needing_attention') }}" class="sidebar-menu-link {% if request.path == url_for('staff.complaints_needing_attention') %}active{% endif %}">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Reopened Complaints</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('staff.staff_history') }}" class="sidebar-menu-link {% if request.path == url_for('staff.staff_history') %}active{% endif %}">
+                            <i class="fas fa-history"></i>
+                            <span>Complaint History</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('main.index') }}" class="sidebar-menu-link">
+                            <i class="fas fa-home"></i>
+                            <span>Main Site</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ current_user.email[:2].upper() if current_user.email else 'ST' }}
+                    </div>
+                    <div>
+                        <div>{{ current_user.email if current_user.email else 'staff@dut.ac.za' }}</div>
+                        <small>Staff Member</small>
+                    </div>
+                </div>
+                <a href="{{ url_for('main.logout') }}" class="btn btn-danger" style="width: 100%;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Mobile Sidebar Toggle -->
+            <button class="sidebar-toggle" id="sidebar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Notifications -->
+            {% if notifications and notifications|length > 0 %}
+            <div class="notification-container">
+                <div class="notification-header">
+                    <h3><i class="fas fa-bell"></i> Notifications</h3>
+                    <button class="btn btn-sm btn-outline" id="close-notifications">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <ul class="notification-list">
+                    {% for notification in notifications %}
+                    <li class="notification-item {% if not notification.is_read %}unread{% endif %}">
+                        <div class="notification-content">
+                            <p>{{ notification.message }}</p>
+                            <small>{{ notification.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        </div>
+                        {% if not notification.is_read %}
+                        <form method="POST" action="{{ url_for('staff.mark_notification_read', notification_id=notification.id) }}" class="notification-actions">
+                            <button type="submit" class="btn btn-sm btn-outline">
+                                <i class="fas fa-check"></i>
+                                Mark as Read
+                            </button>
+                        </form>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <div class="content">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('open');
+            });
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnToggle = sidebarToggle.contains(event.target);
+
+                if (!isClickInsideSidebar && !isClickOnToggle && window.innerWidth <= 768 && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                }
+            });
+
+            // Close notifications
+            const closeNotificationsBtn = document.getElementById('close-notifications');
+            if (closeNotificationsBtn) {
+                closeNotificationsBtn.addEventListener('click', function() {
+                    document.querySelector('.notification-container').style.display = 'none';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+

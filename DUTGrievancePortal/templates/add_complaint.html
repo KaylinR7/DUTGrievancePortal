@@ -1,0 +1,119 @@
+{% extends "admin_base.html" %}  <!-- Correct path -->}
+
+{% block title %}Add Complaint{% endblock %}
+
+{% block content %}
+<div class="form-container" style="max-width: 600px; margin: 0 auto;">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Add Complaint</h2>
+            <p class="card-description">Create a new complaint on behalf of a user</p>
+        </div>
+        <div class="card-content">
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="form-group">
+                    {{ form.category.label }}
+                    <span style="color: var(--destructive);">*</span>
+                    {{ form.category(class="form-control") }}
+                    {% for error in form.category.errors %}
+                    <span style="color: var(--destructive); font-size: 0.875rem;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group" id="sub-topic-group">
+                    {{ form.sub_topic.label }}
+                    <span style="color: var(--destructive);">*</span>
+                    {{ form.sub_topic(class="form-control") }}
+                    {% for error in form.sub_topic.errors %}
+                    <span style="color: var(--destructive); font-size: 0.875rem;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.subject_line.label }}
+                    <span style="color: var(--destructive);">*</span>
+                    {{ form.subject_line(class="form-control", placeholder="Brief title of the complaint") }}
+                    {% for error in form.subject_line.errors %}
+                    <span style="color: var(--destructive); font-size: 0.875rem;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.description.label }}
+                    <span style="color: var(--destructive);">*</span>
+                    {{ form.description(class="form-control", rows=4, placeholder="Detailed description of the complaint") }}
+                    {% for error in form.description.errors %}
+                    <span style="color: var(--destructive); font-size: 0.875rem;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.user_id.label }}
+                    <span style="color: var(--destructive);">*</span>
+                    {{ form.user_id(class="form-control") }}
+                    <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.25rem;">
+                        Select the user who is filing this complaint
+                    </p>
+                    {% for error in form.user_id.errors %}
+                    <span style="color: var(--destructive); font-size: 0.875rem;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Add Complaint</button>
+                    <a href="{{ url_for('admin.admin_database') }}" class="btn btn-outline" style="flex: 1;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('category').addEventListener('change', function () {
+        const category = this.value;
+        const subTopicSelect = document.getElementById('sub_topic');
+        const subTopicGroup = document.getElementById('sub-topic-group');
+
+        // Clear existing options
+        subTopicSelect.innerHTML = '';
+
+        // Define sub-topics structure
+        const subTopics = {
+            academics: [
+                ['academics_registration', 'Registration Issues'],
+                ['academics_results', 'Exam Results']
+            ],
+            faculty: [
+                ['faculty_teaching', 'Teaching Quality'],
+                ['faculty_resources', 'Faculty Resources']
+            ],
+            maintenance: [
+                ['maintenance_cleaning', 'Cleaning Services'],
+                ['maintenance_infrastructure', 'Building Issues']
+            ],
+            health_safety: [
+                ['health_safety_emergency', 'Emergency Response'],
+                ['health_safety_facilities', 'Safety Facilities']
+            ],
+            general: []
+        };
+
+        if (category && category !== 'general') {
+            subTopics[category].forEach(([value, text]) => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = text;
+                subTopicSelect.appendChild(option);
+            });
+            subTopicGroup.style.display = 'block';
+            // Add animation
+            subTopicGroup.style.animation = 'slideInFromTop 0.3s ease-out';
+        } else {
+            subTopicGroup.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}
+

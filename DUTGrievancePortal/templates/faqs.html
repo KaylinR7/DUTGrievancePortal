@@ -2,48 +2,129 @@
 
 {% block content %}
 <div class="faq-container">
-    <h2>Frequently Asked Questions</h2>
-
-    <div class="faq-list">
-        <!-- FAQ 1 -->
-        <div class="faq-item">
-            <h3>1. How do I submit a complaint?</h3>
-            <p>
-                To submit a complaint, log in to your account, go to the "Submit Complaint" page, fill out the form, and click "Submit."
-            </p>
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Frequently Asked Questions</h2>
+            <p class="card-description">Find answers to common questions about the DUT Grievance Portal</p>
+            <div style="position: relative; margin-top: 1rem;">
+                <i class="fas fa-search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted-foreground);"></i>
+                <input type="text" id="faq-search" placeholder="Search FAQs..." class="form-control" style="padding-left: 2rem;">
+            </div>
         </div>
+        <div class="card-content">
+            <div class="faq-list" id="faq-list">
+                <div class="faq-item">
+                    <h3 onclick="toggleFaq(this)">
+                        <i class="fas fa-chevron-right" style="transition: transform 0.3s;"></i>
+                        How do I submit a complaint?
+                    </h3>
+                    <p style="display: none; padding-left: 1.5rem;">
+                        To submit a complaint, log in to your account, go to the "Submit Complaint" page, fill out the form, and click "Submit." You'll need to select a category, provide a subject line, and describe your complaint in detail. You can also attach supporting documents if needed.
+                    </p>
+                </div>
 
-        <!-- FAQ 2 -->
-        <div class="faq-item">
-            <h3>2. How long does it take to resolve a complaint?</h3>
-            <p>
-                We aim to resolve complaints within 72 hours. However, complex issues may take longer.
-            </p>
-        </div>
+                <div class="faq-item">
+                    <h3 onclick="toggleFaq(this)">
+                        <i class="fas fa-chevron-right" style="transition: transform 0.3s;"></i>
+                        How long does it take to resolve a complaint?
+                    </h3>
+                    <p style="display: none; padding-left: 1.5rem;">
+                        We aim to resolve complaints within 72 hours. However, complex issues may take longer. You can track the status of your complaint on your dashboard, and you'll receive notifications when there are updates to your case.
+                    </p>
+                </div>
 
-        <!-- FAQ 3 -->
-        <div class="faq-item">
-            <h3>3. Can I track the status of my complaint?</h3>
-            <p>
-                Yes, you can track the status of your complaint on the "Dashboard" page.
-            </p>
-        </div>
+                <div class="faq-item">
+                    <h3 onclick="toggleFaq(this)">
+                        <i class="fas fa-chevron-right" style="transition: transform 0.3s;"></i>
+                        Can I track the status of my complaint?
+                    </h3>
+                    <p style="display: none; padding-left: 1.5rem;">
+                        Yes, you can track the status of your complaint on the "Dashboard" page. Navigate to "Current Complaints" to see all your active complaints and their current status. You'll also receive notifications when there are updates to your complaints.
+                    </p>
+                </div>
 
-        <!-- FAQ 4 -->
-        <div class="faq-item">
-            <h3>4. What should I do if I forget my password?</h3>
-            <p>
-                If you forget your password, click the "Forgot Password" link on the login page and follow the instructions to reset it.
-            </p>
-        </div>
+                <div class="faq-item">
+                    <h3 onclick="toggleFaq(this)">
+                        <i class="fas fa-chevron-right" style="transition: transform 0.3s;"></i>
+                        What should I do if I forget my password?
+                    </h3>
+                    <p style="display: none; padding-left: 1.5rem;">
+                        If you forget your password, click the "Forgot Password" link on the login page and follow the instructions to reset it. You'll receive an email with a link to create a new password. Make sure to check your spam folder if you don't see the email in your inbox.
+                    </p>
+                </div>
 
-        <!-- FAQ 5 -->
-        <div class="faq-item">
-            <h3>5. Can I attach files to my complaint?</h3>
-            <p>
-                Yes, you can attach files (e.g., PDF, DOC, JPG, PNG) when submitting a complaint.
-            </p>
+                <div class="faq-item">
+                    <h3 onclick="toggleFaq(this)">
+                        <i class="fas fa-chevron-right" style="transition: transform 0.3s;"></i>
+                        Can I attach files to my complaint?
+                    </h3>
+                    <p style="display: none; padding-left: 1.5rem;">
+                        Yes, you can attach files (e.g., PDF, DOC, JPG, PNG) when submitting a complaint. There is a 5MB size limit per file. These attachments can help provide evidence or additional context for your complaint.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 onclick="toggleFaq(this)">
+                        <i class="fas fa-chevron-right" style="transition: transform 0.3s;"></i>
+                        What types of complaints can I submit?
+                    </h3>
+                    <p style="display: none; padding-left: 1.5rem;">
+                        You can submit complaints related to academics (registration, exam results), faculty (teaching quality, resources), maintenance (cleaning, building issues), health & safety (emergency response, facilities), or general concerns.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 onclick="toggleFaq(this)">
+                        <i class="fas fa-chevron-right" style="transition: transform 0.3s;"></i>
+                        Can I update my complaint after submission?
+                    </h3>
+                    <p style="display: none; padding-left: 1.5rem;">
+                        Once submitted, you cannot directly edit your complaint. However, you can add comments or additional information by viewing the complaint details and using the comment section. You can also submit a new complaint if necessary.
+                    </p>
+                </div>
+            </div>
+            <div id="no-results" style="text-align: center; padding: 2rem; display: none;">
+                <p style="color: var(--muted-foreground);">No FAQs found matching your search. Try a different query.</p>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    function toggleFaq(element) {
+        const content = element.nextElementSibling;
+        const icon = element.querySelector('i');
+
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            icon.style.transform = 'rotate(90deg)';
+            // Add animation
+            content.style.animation = 'fadeIn 0.3s ease-in-out';
+        } else {
+            content.style.display = 'none';
+            icon.style.transform = 'rotate(0deg)';
+        }
+    }
+
+    // Search functionality
+    document.getElementById('faq-search').addEventListener('input', function() {
+        const searchQuery = this.value.toLowerCase();
+        const faqItems = document.querySelectorAll('.faq-item');
+        let resultsFound = false;
+
+        faqItems.forEach(item => {
+            const question = item.querySelector('h3').textContent.toLowerCase();
+            const answer = item.querySelector('p').textContent.toLowerCase();
+
+            if (question.includes(searchQuery) || answer.includes(searchQuery)) {
+                item.style.display = 'block';
+                resultsFound = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        document.getElementById('no-results').style.display = resultsFound ? 'none' : 'block';
+    });
+</script>
 {% endblock %}

@@ -2,65 +2,68 @@
 
 {% block content %}
 <div class="complaints-container">
-    <h2>Complaint History</h2>
-    <a href="{{ url_for('main.dashboard') }}" class="btn btn-back">← Back to Dashboard</a>
+    <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
+        <a href="{{ url_for('main.dashboard') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+        <h2 style="margin-left: 1rem;">Complaint History</h2>
+    </div>
 
-    {% if complaints %}
-    <table class="complaints-table">
-        <thead>
-            <tr>
-                <th>Reference ID</th>
-                <th>Category</th>
-                <th>Sub-topic</th>
-                <th>Status</th>
-                <th>Time Left to Respond</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for complaint in complaints %}
-            {% set deadline = complaint.created_at + timedelta(hours=72) %}
-            <tr>
-                <td>{{ complaint.reference_id }}</td>
-                <td>{{ complaint.category|title }}</td>
-                <td>{{ complaint.sub_topic|replace('_', ' ')|title if complaint.sub_topic }}</td>
-                <td>{{ complaint.status }}</td>
-                <td>
-                    <span class="countdown" data-deadline="{{ deadline.strftime('%Y-%m-%d %H:%M:%S') }}"></span>
-                </td>
-                <td><a href="{{ url_for('main.view_complaint', id=complaint.id) }}">View Details</a></td>
-
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p class="no-complaints">No complaint history found.</p>
-    {% endif %}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">All Complaints</h2>
+            <p class="card-description">View your complete complaint history</p>
+        </div>
+        <div class="card-content">
+            {% if complaints %}
+            <div style="overflow-x: auto;">
+                <table class="complaints-table">
+                    <thead>
+                        <tr>
+                            <th>Reference ID</th>
+                            <th>Category</th>
+                            <th>Sub-topic</th>
+                            <th>Status</th>
+                            <th>Date Submitted</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for complaint in complaints %}
+                        <tr>
+                            <td>{{ complaint.reference_id }}</td>
+                            <td>{{ complaint.category|title }}</td>
+                            <td>{{ complaint.sub_topic|replace('_', ' ')|title if complaint.sub_topic else 'N/A' }}</td>
+                            <td>
+                                <span class="badge
+                                    {% if complaint.status == 'In Progress' %}badge-blue
+                                    {% elif complaint.status == 'Under Review' %}badge-yellow
+                                    {% elif complaint.status == 'Resolved' %}badge-green
+                                    {% elif complaint.status == 'Rejected' %}badge-red
+                                    {% else %}badge-gray{% endif %}">
+                                    {{ complaint.status }}
+                                </span>
+                            </td>
+                            <td>{{ complaint.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <a href="{{ url_for('main.view_complaint', id=complaint.id) }}" class="btn btn-outline btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 3rem 1rem;">
+                <p style="color: var(--muted-foreground); margin-bottom: 1rem;">No complaint history found.</p>
+                <a href="{{ url_for('main.submit_complaint') }}" class="btn btn-primary">Submit a New Complaint</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    function updateCountdowns() {
-        let elements = document.querySelectorAll(".countdown");
-        elements.forEach(el => {
-            let deadline = new Date(el.getAttribute("data-deadline")).getTime();
-            let now = new Date().getTime();
-            let timeLeft = deadline - now;
-
-            if (timeLeft > 0) {
-                let hours = Math.floor(timeLeft / (1000 * 60 * 60));
-                let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                el.innerHTML = `${hours}h ${minutes}m left`;
-            } else {
-                el.innerHTML = "<span style='color: red;'>Time Expired</span>";
-            }
-        });
-    }
-
-    updateCountdowns();
-    setInterval(updateCountdowns, 60000); // Update every minute
-});
-</script>
-
 {% endblock %}

@@ -3,19 +3,24 @@
 {% block content %}
 <div class="form-container">
     <h2>Login</h2>
+    <p class="card-description">Enter your credentials to access your account</p>
+
     <form method="POST" action="{{ url_for('main.login') }}">
         {{ form.hidden_tag() }}
 
         <div class="form-group">
-            {{ form.email.label }}
-            {{ form.email(class="form-control") }}
-            {% for error in form.email.errors %}
+            {{ form.student_staff_number.label }}
+            {{ form.student_staff_number(class="form-control", placeholder="Enter your student/staff number") }}
+            {% for error in form.student_staff_number.errors %}
             <span class="text-danger">{{ error }}</span>
             {% endfor %}
         </div>
 
         <div class="form-group">
-            {{ form.password.label }}
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                {{ form.password.label }}
+                <a href="#" class="text-primary" style="font-size: 0.875rem;"></a>
+            </div>
             {{ form.password(class="form-control") }}
             {% for error in form.password.errors %}
             <span class="text-danger">{{ error }}</span>
@@ -23,13 +28,8 @@
         </div>
 
         <div class="form-group">
-            {{ form.submit(class="btn btn-primary") }}
+            {{ form.submit(class="btn btn-primary", style="width: 100%;") }}
         </div>
-
-        <p class="text-muted">
-            Don't have an account?
-            <a href="{{ url_for('main.register') }}">Register here</a>
-        </p>
     </form>
 </div>
 {% endblock %}

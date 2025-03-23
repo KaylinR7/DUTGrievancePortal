@@ -1,51 +1,114 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="complaint-details">
-    <h2>Complaint Details</h2>
-    <a href="{{ url_for('main.dashboard') }}" class="btn btn-back">← Back to Dashboard</a>
+<div class="dashboard-container">
+    <div class="card">
+        <div class="card-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 class="card-title">Complaint Details</h2>
+                <span class="badge {% if complaint.status == 'Resolved' %}badge-green{% elif complaint.status == 'In Progress' %}badge-blue{% elif complaint.status == 'Reopened' %}badge-red{% else %}badge-yellow{% endif %}">
+                    {{ complaint.status }}
+                </span>
+            </div>
+            <p class="card-description">Reference ID: {{ complaint.reference_id }}</p>
+        </div>
+        <div class="card-content">
+            <div style="display: grid; gap: 1.5rem;">
+                <div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">{{ complaint.subject_line }}</h3>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                        <div style="font-size: 0.875rem; color: var(--muted-foreground);">
+                            <span>Category: </span>
+                            <span style="font-weight: 500; color: var(--foreground);">{{ complaint.category }}</span>
+                        </div>
+                        {% if complaint.sub_topic %}
+                        <div style="font-size: 0.875rem; color: var(--muted-foreground);">
+                            <span>Sub-topic: </span>
+                            <span style="font-weight: 500; color: var(--foreground);">{{ complaint.sub_topic }}</span>
+                        </div>
+                        {% endif %}
+                        <div style="font-size: 0.875rem; color: var(--muted-foreground);">
+                            <span>Submitted: </span>
+                            <span style="font-weight: 500; color: var(--foreground);">{{ complaint.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                        </div>
+                    </div>
+                    <div style="background-color: var(--accent); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem;">
+                        <p>{{ complaint.description }}</p>
+                    </div>
+                    {% if complaint.attachment_path %}
+                    <div style="margin-top: 1rem;">
+                        <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">Attachment</h4>
+                        <a href="{{ url_for('static', filename=complaint.attachment_path) }}" class="btn btn-outline" target="_blank">
+                            <i class="fas fa-paperclip"></i>
+                            View Attachment
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
 
-    <div class="complaint-info">
-        <p><strong>Reference ID:</strong> {{ complaint.reference_id }}</p>
-        <p><strong>Category:</strong> {{ complaint.category|title }}</p>
-        <p><strong>Sub-topic:</strong> {{ complaint.sub_topic|replace('_', ' ')|title if complaint.sub_topic }}</p>
-        <p><strong>Subject:</strong> {{ complaint.subject_line }}</p>
-        <p><strong>Description:</strong> {{ complaint.description }}</p>
-        <p><strong>Status:</strong> {{ complaint.status }}</p>
-        <p><strong>Date Submitted:</strong> {{ complaint.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                {% if complaint.updates %}
+                <div style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                    <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">Staff Responses</h4>
+                    {% for update in complaint.updates %}
+                    <div style="background-color: var(--primary-light); padding: 1rem; border-radius: var(--radius); margin-bottom: 0.5rem;">
+                        <p>{{ update.update_text }}</p>
+                        <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.5rem;">
+                            By {{ update.updated_by }} on {{ update.update_time.strftime('%Y-%m-%d %H:%M') }}
+                        </p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
 
-        <p>
-            <strong>Time Left to Respond:</strong>
-            <span class="countdown" data-deadline="{{ deadline.strftime('%Y-%m-%d %H:%M:%S') }}"></span>
-        </p>
-
-        {% if complaint.attachment_path %}
-        <p><strong>Attachment:</strong> <a href="{{ url_for('static', filename=complaint.attachment_path) }}" target="_blank">View Attachment</a></p>
-        {% endif %}
+                <!-- Feedback Section -->
+                {% set feedback = complaint.feedback|first if complaint.feedback else None %}
+                {% if feedback %}
+                <div style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                    <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">Your Feedback</h4>
+                    <div style="background-color: {% if feedback.rating >= 4 %}var(--success){% elif feedback.rating == 3 %}var(--info){% else %}var(--destructive){% endif %}; color: white; padding: 1rem; border-radius: var(--radius); margin-bottom: 0.5rem;">
+                        <p style="font-weight: 500;">
+                            Rating:
+                            {% if feedback.rating == 5 %}
+                            Very Satisfied (5/5)
+                            {% elif feedback.rating == 4 %}
+                            Satisfied (4/5)
+                            {% elif feedback.rating == 3 %}
+                            Neutral (3/5)
+                            {% elif feedback.rating == 2 %}
+                            Unsatisfied (2/5)
+                            {% else %}
+                            Very Unsatisfied (1/5)
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% if feedback.comments %}
+                    <div style="background-color: var(--accent); padding: 1rem; border-radius: var(--radius);">
+                        <p>{{ feedback.comments }}</p>
+                    </div>
+                    {% endif %}
+                    <div style="font-size: 0.875rem; color: var(--muted-foreground); margin-top: 0.5rem;">
+                        Feedback provided on {{ feedback.submitted_at.strftime('%Y-%m-%d %H:%M') }}
+                    </div>
+                </div>
+                {% elif complaint.status in ['Resolved', 'In Progress'] %}
+                <div style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                    <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">Provide Feedback</h4>
+                    <p style="margin-bottom: 1rem;">Let us know how satisfied you are with the resolution of your complaint.</p>
+                    <a href="{{ url_for('main.provide_feedback', complaint_id=complaint.id) }}" class="btn btn-primary">
+                        <i class="fas fa-star"></i>
+                        Rate Resolution
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-footer">
+            <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        function updateCountdowns() {
-            let elements = document.querySelectorAll(".countdown");
-            elements.forEach(el => {
-                let deadline = new Date(el.getAttribute("data-deadline")).getTime();
-                let now = new Date().getTime();
-                let timeLeft = deadline - now;
-
-                if (timeLeft > 0) {
-                    let hours = Math.floor(timeLeft / (1000 * 60 * 60));
-                    let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                    el.innerHTML = `${hours}h ${minutes}m left`;
-                } else {
-                    el.innerHTML = "<span style='color: red;'>Time Expired</span>";
-                }
-            });
-        }
-
-        updateCountdowns();
-        setInterval(updateCountdowns, 60000); // Update every minute
-    });
-</script>
 {% endblock %}
+

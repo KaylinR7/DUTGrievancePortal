@@ -4,53 +4,154 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DUT Grievance Portal</title>
-    <link href="../static/content/Styles.css" rel="stylesheet" />
+    <link href="../static/content/Student.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 <body>
-    <header>
-        <h1>DUT Grievance Portal</h1>
-        <nav>
-            {% if current_user.is_authenticated %}
-            <!-- Authenticated Navigation -->
-            <a href="{{ url_for('main.index') }}">Home</a>
-            <a href="{{ url_for('main.submit_complaint') }}">Submit Complaint</a>
-            <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('main.notifications') }}" class="notification-link">
-                Notifications
-                {% if notification_count > 0 %}
-                <span class="notification-badge">{{ notification_count }}</span>
-                {% endif %}
-            </a>
-            <a href="{{ url_for('main.faqs') }}">FAQs</a>
-            <a href="{{ url_for('main.contact') }}">Contact</a>
-            <span class="user-info">Welcome, {{ current_user.email }}</span>
-            <a href="{{ url_for('main.logout') }}">Logout</a>
-            {% else %}
-            <!-- Public Navigation -->
-            <a href="{{ url_for('main.welcome') }}">Home</a>
-            <a href="{{ url_for('main.faqs') }}">FAQs</a>
-            <a href="{{ url_for('main.contact') }}">Contact</a>
-            <a href="{{ url_for('main.login') }}">Login</a>
-            <a href="{{ url_for('main.register') }}">Register</a>
-            {% endif %}
-        </nav>
-    </header>
-    <main>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="flash-messages">
-            {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">
-                {{ message }}
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <span>DUT Grievance</span>
+                </div>
             </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-        {% endwith %}
 
-        <div class="content">
-            {% block content %}{% endblock %}
-        </div>
-    </main>
+            <div class="sidebar-content">
+                <ul class="sidebar-menu">
+                    {% if current_user.is_authenticated %}
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('main.index') }}" class="sidebar-menu-link {% if request.path == url_for('main.index') %}active{% endif %}">
+                            <i class="fas fa-home"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('main.submit_complaint') }}" class="sidebar-menu-link {% if request.path == url_for('main.submit_complaint') %}active{% endif %}">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Submit Complaint</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('main.dashboard') }}" class="sidebar-menu-link {% if request.path == url_for('main.dashboard') %}active{% endif %}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('main.current_complaints') }}" class="sidebar-menu-link {% if request.path == url_for('main.current_complaints') %}active{% endif %}">
+                            <i class="fas fa-clock"></i>
+                            <span>Current Complaints</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('main.complaint_history') }}" class="sidebar-menu-link {% if request.path == url_for('main.complaint_history') %}active{% endif %}">
+                            <i class="fas fa-history"></i>
+                            <span>Complaint History</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('main.notifications') }}" class="sidebar-menu-link {% if request.path == url_for('main.notifications') %}active{% endif %}">
+                            <i class="fas fa-bell"></i>
+                            <span>Notifications</span>
+                            {% if notification_count > 0 %}
+                            <span class="notification-badge">{{ notification_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('main.faqs') }}" class="sidebar-menu-link {% if request.path == url_for('main.faqs') %}active{% endif %}">
+                            <i class="fas fa-question-circle"></i>
+                            <span>FAQs</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('main.contact') }}" class="sidebar-menu-link {% if request.path == url_for('main.contact') %}active{% endif %}">
+                            <i class="fas fa-envelope"></i>
+                            <span>Contact</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                {% if current_user.is_authenticated %}
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ current_user.student_staff_number[:2] }}
+                    </div>
+                    <div>
+                        <div>{{ current_user.student_staff_number }}</div>
+                        <small>
+                            {% if current_user.is_admin %}Admin
+                            {% elif current_user.is_staff %}Staff
+                            {% else %}Student{% endif %}
+                        </small>
+                    </div>
+                </div>
+                <a href="{{ url_for('main.logout') }}" class="btn btn-danger" style="width: 100%;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+                {% else %}
+                <a href="{{ url_for('main.login') }}" class="btn btn-primary" style="width: 100%; margin-bottom: 0.5rem;">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login
+                </a>
+                {% endif %}
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Mobile Sidebar Toggle -->
+            <button class="sidebar-toggle" id="sidebar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <div class="content">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+
+            sidebarToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('open');
+            });
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function (event) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnToggle = sidebarToggle.contains(event.target);
+
+                if (!isClickInsideSidebar && !isClickOnToggle && window.innerWidth <= 768 && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

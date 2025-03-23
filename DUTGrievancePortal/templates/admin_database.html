@@ -1,0 +1,273 @@
+{% extends "admin_base.html" %}  <!-- Correct path -->
+{% block title %}Database Management{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Database Management</h2>
+            <p class="card-description">Manage users, complaints, and notifications</p>
+        </div>
+        <div class="card-content">
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                <a href="{{ url_for('admin.add_user') }}" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i>
+                    Add User
+                </a>
+                <a href="{{ url_for('admin.add_complaint') }}" class="btn btn-primary">
+                    <i class="fas fa-file-plus"></i>
+                    Add Complaint
+                </a>
+                <a href="{{ url_for('admin.add_notification') }}" class="btn btn-primary">
+                    <i class="fas fa-bell"></i>
+                    Add Notification
+                </a>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs-container">
+                <div class="tabs-header" style="border-bottom: 1px solid var(--border); margin-bottom: 1rem;">
+                    <ul style="display: flex; list-style: none; padding: 0; margin: 0; overflow-x: auto;">
+                        <li style="margin-right: 0.5rem;">
+                            <button class="tab-button active" data-tab="users" style="padding: 0.75rem 1rem; border: none; background: none; cursor: pointer; font-weight: 500; color: var(--primary); border-bottom: 2px solid var(--primary);">
+                                <i class="fas fa-users"></i>
+                                Users
+                            </button>
+                        </li>
+                        <li style="margin-right: 0.5rem;">
+                            <button class="tab-button" data-tab="complaints" style="padding: 0.75rem 1rem; border: none; background: none; cursor: pointer; font-weight: 500; color: var(--foreground);">
+                                <i class="fas fa-file-alt"></i>
+                                Complaints
+                            </button>
+                        </li>
+                        <li>
+                            <button class="tab-button" data-tab="notifications" style="padding: 0.75rem 1rem; border: none; background: none; cursor: pointer; font-weight: 500; color: var(--foreground);">
+                                <i class="fas fa-bell"></i>
+                                Notifications
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="tab-content">
+                    <!-- Users Tab -->
+                    <div id="users-tab" class="tab-pane active">
+                        <div style="overflow-x: auto;">
+                            <table class="complaints-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Email</th>
+                                        <th>Number</th>
+                                        <th>Role</th>
+                                        <th>Complaints</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users.items %}
+                                    <tr>
+                                        <td>{{ user.id }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>{{ user.student_staff_number }}</td>
+                                        <td>
+                                            <span class="badge {% if user.is_staff %}badge-green{% else %}badge-blue{% endif %}">
+                                                {{ 'Staff' if user.is_staff else 'Student' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ user.complaints|length }}</td>
+                                        <td>
+                                            <div style="display: flex; gap: 0.5rem;">
+                                                <a href="{{ url_for('admin.edit_user', id=user.id) }}" class="btn btn-sm btn-outline" title="Edit">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </a>
+                                                <form action="{{ url_for('admin.delete_user', id=user.id) }}" method="POST" style="display: inline;">
+                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this user?')" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Complaints Tab -->
+                    <div id="complaints-tab" class="tab-pane" style="display: none;">
+                        <div style="overflow-x: auto;">
+                            <table class="complaints-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Category</th>
+                                        <th>Sub Topic</th>
+                                        <th>Subject</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for complaint in complaints.items %}
+                                    <tr>
+                                        <td>{{ complaint.id }}</td>
+                                        <td>{{ complaint.category }}</td>
+                                        <td>{{ complaint.sub_topic }}</td>
+                                        <td>{{ complaint.subject_line }}</td>
+                                        <td>
+                                            <span class="badge {% if complaint.status == 'Resolved' %}badge-green{% elif complaint.status == 'In Progress' %}badge-blue{% else %}badge-yellow{% endif %}">
+                                                {{ complaint.status }}
+                                            </span>
+                                        </td>
+                                        <td>{{ complaint.created_at.strftime('%Y-%m-%d') }}</td>
+                                        <td>
+                                            <div style="display: flex; gap: 0.5rem;">
+                                                <a href="{{ url_for('admin.edit_complaint', id=complaint.id) }}" class="btn btn-sm btn-outline" title="Edit">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </a>
+                                                <form action="{{ url_for('admin.delete_complaint', id=complaint.id) }}" method="POST" style="display: inline;">
+                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this complaint?')" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Notifications Tab -->
+                    <div id="notifications-tab" class="tab-pane" style="display: none;">
+                        <div style="overflow-x: auto;">
+                            <table class="complaints-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>User ID</th>
+                                        <th>Message</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for notification in notifications.items %}
+                                    <tr>
+                                        <td>{{ notification.id }}</td>
+                                        <td>{{ notification.user_id }}</td>
+                                        <td>{{ notification.message|truncate(40) }}</td>
+                                        <td>
+                                            <span class="badge {% if notification.is_read %}badge-green{% else %}badge-yellow{% endif %}">
+                                                {{ 'Read' if notification.is_read else 'Unread' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ notification.created_at.strftime('%Y-%m-%d') }}</td>
+                                        <td>
+                                            <div style="display: flex; gap: 0.5rem;">
+                                                <a href="{{ url_for('admin.edit_notification', id=notification.id) }}" class="btn btn-sm btn-outline" title="Edit">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </a>
+                                                <form action="{{ url_for('admin.delete_notification', id=notification.id) }}" method="POST" style="display: inline;">
+                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this notification?')" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" style="margin-top: 1.5rem;">
+                {% set pagination_object = users if active_tab == 'users' else complaints if active_tab == 'complaints' else notifications %}
+
+                {% if pagination_object.has_prev %}
+                <a href="{{ url_for('admin.admin_database', page=pagination_object.prev_num) }}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                {% endif %}
+
+                {% for page_num in pagination_object.iter_pages() %}
+                {% if page_num %}
+                <a href="{{ url_for('admin.admin_database', page=page_num) }}"
+                  {% if page_num == pagination_object.page %} class="active" {% endif %}
+
+                    {{ page_num }}
+                </a>
+                {% else %}
+                <span>...</span>
+                {% endif %}
+                {% endfor %}
+
+                {% if pagination_object.has_next %}
+                <a href="{{ url_for('admin.admin_database', page=pagination_object.next_num) }}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Tab functionality
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Remove active class from all buttons and panes
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.style.color = 'var(--foreground)';
+                    btn.style.borderBottom = 'none';
+                });
+
+                tabPanes.forEach(pane => {
+                    pane.classList.remove('active');
+                    pane.style.display = 'none';
+                });
+
+                // Add active class to clicked button and corresponding pane
+                this.classList.add('active');
+                this.style.color = 'var(--primary)';
+                this.style.borderBottom = '2px solid var(--primary)';
+
+                const tabId = this.getAttribute('data-tab');
+                const activePane = document.getElementById(tabId + '-tab');
+                activePane.classList.add('active');
+                activePane.style.display = 'block';
+
+                // Update URL with active tab
+                const url = new URL(window.location);
+                url.searchParams.set('tab', tabId);
+                window.history.replaceState({}, '', url);
+            });
+        });
+
+        // Set active tab based on URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeTab = urlParams.get('tab') || 'users';
+
+        const activeButton = document.querySelector(`.tab-button[data-tab="${activeTab}"]`);
+        if (activeButton) {
+            activeButton.click();
+        }
+    });
+</script>
+{% endblock %}
+

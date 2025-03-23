@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="packages\EntityFramework.6.4.0\build\EntityFramework.props" Condition="Exists('packages\EntityFramework.6.4.0\build\EntityFramework.props')" />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -17,8 +18,11 @@
     <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
     <Name>DUTGrievancePortal</Name>
     <RootNamespace>DUTGrievancePortal</RootNamespace>
-    <InterpreterId>MSBuild|venv|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|vienv|$(MSBuildProjectFullPath)</InterpreterId>
     <SuppressPackageInstallationPrompt>True</SuppressPackageInstallationPrompt>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <WebBrowserUrl>http://localhost</WebBrowserUrl>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,7 +33,13 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="create_admin.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTGrievancePortal\config.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTGrievancePortal\extensions.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTGrievancePortal\forms.py">
@@ -60,20 +70,45 @@
     <Folder Include="DUTGrievancePortal\static\fonts\" />
     <Folder Include="DUTGrievancePortal\static\scripts\" />
     <Folder Include="DUTGrievancePortal\templates\" />
+    <Folder Include="Properties\" />
+    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DUTGrievancePortal\static\content\Admin.css" />
+    <Content Include="DUTGrievancePortal\static\content\Respondtocomplaint.css" />
+    <Content Include="DUTGrievancePortal\static\content\Staff.css" />
+    <Content Include="DUTGrievancePortal\static\content\Student.css" />
     <Content Include="DUTGrievancePortal\static\content\Styles.css" />
+    <Content Include="DUTGrievancePortal\static\content\Stylesheet1.css" />
+    <Content Include="DUTGrievancePortal\templates\add_complaint.html" />
+    <Content Include="DUTGrievancePortal\templates\add_notification.html" />
+    <Content Include="DUTGrievancePortal\templates\add_user.html" />
+    <Content Include="DUTGrievancePortal\templates\admin_base.html" />
+    <Content Include="DUTGrievancePortal\templates\admin_dashboard.html" />
+    <Content Include="DUTGrievancePortal\templates\admin_database.html" />
     <Content Include="DUTGrievancePortal\templates\base.html" />
     <Content Include="DUTGrievancePortal\templates\complaint.html" />
     <Content Include="DUTGrievancePortal\templates\complaint_history.html" />
     <Content Include="DUTGrievancePortal\templates\current_complaints.html" />
     <Content Include="DUTGrievancePortal\templates\dashboard.html" />
+    <Content Include="DUTGrievancePortal\templates\edit_complaint.html" />
+    <Content Include="DUTGrievancePortal\templates\edit_notification.html" />
+    <Content Include="DUTGrievancePortal\templates\edit_user.html" />
     <Content Include="DUTGrievancePortal\templates\faqs.html" />
     <Content Include="DUTGrievancePortal\templates\login.html" />
     <Content Include="DUTGrievancePortal\templates\Notifications.html" />
-    <Content Include="DUTGrievancePortal\templates\register.html" />
+    <Content Include="DUTGrievancePortal\templates\provide_feedback.html" />
+    <Content Include="DUTGrievancePortal\templates\respond_to_complaint.html" />
+    <Content Include="DUTGrievancePortal\templates\staff_base.html" />
+    <Content Include="DUTGrievancePortal\templates\staff_complaints.html" />
+    <Content Include="DUTGrievancePortal\templates\staff_dashboard.html" />
+    <Content Include="DUTGrievancePortal\templates\staff_history.html" />
+    <Content Include="DUTGrievancePortal\templates\staff_complaints_needing_attention.html" />
+    <Content Include="DUTGrievancePortal\templates\staff_view_complaint.html" />
     <Content Include="DUTGrievancePortal\templates\view_complaint.html" />
-    <Content Include="DUTGrievancePortal\templates\welcome.html" />
+    <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\DUTGrievancePortal20250322154449 - Web Deploy.pubxml" />
+    <Content Include="Web.config" />
     <Content Include="requirements.txt" />
     <Content Include="DUTGrievancePortal\static\content\bootstrap.css" />
     <Content Include="DUTGrievancePortal\static\content\bootstrap.min.css" />
@@ -103,15 +138,40 @@
     <Content Include="DUTGrievancePortal\templates\layout.html" />
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="venv\">
-      <Id>venv</Id>
-      <Version>0.0</Version>
-      <Description>venv (Python 3.12 (64-bit))</Description>
+    <Interpreter Include="vienv\">
+      <Id>vienv</Id>
+      <Version>3.12</Version>
+      <Description>vienv (Python 3.12 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
       <Architecture>X64</Architecture>
     </Interpreter>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Name>EntityFramework</Name>
+      <AssemblyName>EntityFramework.dll</AssemblyName>
+      <HintPath>packages\EntityFramework.6.4.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Name>EntityFramework.SqlServer</Name>
+      <AssemblyName>EntityFramework.SqlServer.dll</AssemblyName>
+      <HintPath>packages\EntityFramework.6.4.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="mscorlib">
+      <Name>mscorlib</Name>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <Name>System.ComponentModel.DataAnnotations</Name>
+      <AssemblyName>
+      </AssemblyName>
+      <HintPath>
+      </HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Web.targets" />
   <!-- Specify pre- and post-build commands in the BeforeBuild and 
@@ -153,4 +213,13 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\EntityFramework.6.4.0\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.4.0\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('packages\EntityFramework.6.4.0\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.4.0\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="packages\EntityFramework.6.4.0\build\EntityFramework.targets" Condition="Exists('packages\EntityFramework.6.4.0\build\EntityFramework.targets')" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>

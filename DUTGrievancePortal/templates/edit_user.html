@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card shadow-lg">
+            <div class="card-body">
+                <h1 class="text-center">Edit User</h1>
+                <hr>
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.student_staff_number.label(class="form-label") }}
+                        {{ form.student_staff_number(class="form-control") }}
+                    </div>
+                    <div class="mb-3 form-check">
+                        {{ form.is_staff(class="form-check-input") }}
+                        {{ form.is_staff.label(class="form-check-label") }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update User</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

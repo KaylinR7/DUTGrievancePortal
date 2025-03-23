@@ -2,18 +2,99 @@
 
 {% block content %}
 <div class="contact-container">
-    <h2>Contact Us</h2>
+    <div style="display: grid; gap: 2rem; grid-template-columns: 1fr; margin-bottom: 2rem;">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Contact Us</h2>
+                <p class="card-description">Get in touch with our support team for assistance</p>
+            </div>
+            <div class="card-content">
+                <div style="display: grid; gap: 1.5rem;">
+                    <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                        <div style="background-color: var(--primary-light); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-envelope" style="color: var(--primary);"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-weight: 500; margin-bottom: 0.25rem;">Email</h3>
+                            <p style="color: var(--foreground);">support@dutgrievanceportal.com</p>
+                            <p style="font-size: 0.875rem; color: var(--muted-foreground); margin-top: 0.25rem;">
+                                We aim to respond to all emails within 24 hours
+                            </p>
+                        </div>
+                    </div>
 
-    <div class="contact-info">
-        <p>If you have any questions or need assistance, feel free to reach out to us:</p>
+                    <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                        <div style="background-color: var(--primary-light); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-phone" style="color: var(--primary);"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-weight: 500; margin-bottom: 0.25rem;">Phone</h3>
+                            <p style="color: var(--foreground);">+27 123 456 7890</p>
+                            <p style="font-size: 0.875rem; color: var(--muted-foreground); margin-top: 0.25rem;">
+                                Available Monday to Friday, 8:00 AM to 5:00 PM
+                            </p>
+                        </div>
+                    </div>
 
-        <ul>
-            <li><strong>Email:</strong> support@dutgrievanceportal.com</li>
-            <li><strong>Phone:</strong> +27 123 456 7890</li>
-            <li><strong>Address:</strong> 123 University Road, Durban, South Africa</li>
-        </ul>
+                    <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                        <div style="background-color: var(--primary-light); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-map-marker-alt" style="color: var(--primary);"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-weight: 500; margin-bottom: 0.25rem;">Address</h3>
+                            <p style="color: var(--foreground);">123 University Road</p>
+                            <p style="color: var(--foreground);">Durban, South Africa</p>
+                        </div>
+                    </div>
 
-        <p>Our support team is available Monday to Friday, 8:00 AM to 5:00 PM.</p>
+                    <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                        <div style="background-color: var(--primary-light); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-clock" style="color: var(--primary);"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-weight: 500; margin-bottom: 0.25rem;">Office Hours</h3>
+                            <p style="color: var(--foreground);">Monday to Friday: 8:00 AM - 5:00 PM</p>
+                            <p style="color: var(--foreground);">Saturday: 9:00 AM - 1:00 PM</p>
+                            <p style="color: var(--foreground);">Sunday: Closed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Send a Message</h2>
+                <p class="card-description">Fill out the form below and we'll get back to you</p>
+            </div>
+            <div class="card-content">
+                <form class="form-container" style="box-shadow: none; padding: 0; max-width: none;">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" class="form-control" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" class="form-control" placeholder="Your email address">
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" class="form-control" placeholder="What is this regarding?">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" class="form-control" rows="5" placeholder="How can we help you?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div style="aspect-ratio: 16/9; width: 100%; background-color: var(--muted); border-radius: var(--radius); overflow: hidden; display: flex; align-items: center; justify-content: center; color: var(--muted-foreground);">
+            <p>Interactive Map Would Be Displayed Here</p>
+        </div>
     </div>
 </div>
 {% endblock %}

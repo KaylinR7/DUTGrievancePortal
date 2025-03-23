@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/DUTGrievancePortal20250322154449/providers/Microsoft.ServiceLinker/linkers/ConnectionStringsDUTGrievenceDB_CA25ABD0AB",
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/dutgrievanceportaldbserver/databases/DUTGrievancePortal_db",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:DUTGrievenceDB",
+      "dynamicId": null
+    }
+  }
+}
