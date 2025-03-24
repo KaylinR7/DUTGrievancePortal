@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card shadow-lg">
+            <div class="card-body">
+                <h1 class="text-center">Welcome to the Admin Dashboard</h1>
+                <hr>
+                <div class="text-center">
+                    <p>Use the navigation menu to manage users, view reports, and perform administrative tasks.</p>
+
+                    <!-- Database Button -->
+                    <a href="{{ url_for('admin.admin_database') }}" class="btn btn-info">Database</a>
+
+                    <!-- Other Buttons -->
+                    <a href="{{ url_for('main.index') }}" class="btn btn-primary">Go to Homepage</a>
+                    <a href="{{ url_for('main.logout') }}" class="btn btn-danger">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
