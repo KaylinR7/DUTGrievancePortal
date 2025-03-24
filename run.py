@@ -1,18 +1,23 @@
-import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from config import Config
 
-# Initialize the app and database
 db = SQLAlchemy()
 
-app = Flask(__name__)
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+    
+    # Initialize extensions
+    db.init_app(app)
+    
+    # Register blueprints
+    from .routes import main_bp  # Update with your actual blueprint
+    app.register_blueprint(main_bp)
+    
+    return app
 
-# Set up database URI directly (you don't need os.getenv() here if the URI is a static string)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://dutgreivanceportal_user:bxnLojOc7vZDSnS6h1mDPDwcUK0v0IFZ@dpg-cvgr7h8fnakc73elosj0-a.oregon-postgres.render.com/dutgreivanceportal'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Initialize the database with the app
-db.init_app(app)
+app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0')
