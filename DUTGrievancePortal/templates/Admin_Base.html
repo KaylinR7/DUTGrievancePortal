@@ -1,1 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUT Admin - {% block title %}Dashboard{% endblock %}</title>
+    <link href="{{ url_for('static', filename='content/Admin.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="layout">
+        <!-- Admin Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon" style="background-color: var(--destructive); color: white;">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <span>DUT Admin</span>
+                </div>
+                <button class="sidebar-toggle-desktop" id="sidebar-toggle-desktop">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-content">
+                <ul class="sidebar-menu">
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('admin.admin_dashboard') }}" class="sidebar-menu-link {% if request.path == url_for('admin.admin_dashboard') %}active{% endif %}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('admin.admin_database') }}" class="sidebar-menu-link {% if request.path == url_for('admin.admin_database') %}active{% endif %}">
+                            <i class="fas fa-database"></i>
+                            <span>Database</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('admin.add_user') }}" class="sidebar-menu-link {% if request.path == url_for('admin.add_user') %}active{% endif %}">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Add User</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('admin.add_complaint') }}" class="sidebar-menu-link {% if request.path == url_for('admin.add_complaint') %}active{% endif %}">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Add Complaint</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('admin.add_notification') }}" class="sidebar-menu-link {% if request.path == url_for('admin.add_notification') %}active{% endif %}">
+                            <i class="fas fa-bell"></i>
+                            <span>Add Notification</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ url_for('main.index') }}" class="sidebar-menu-link">
+                            <i class="fas fa-home"></i>
+                            <span>Main Site</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" style="background-color: var(--destructive);">
+                        AD
+                    </div>
+                    <div>
+                        <div>admin@dut.ac.za</div>
+                        <small>Administrator</small>
+                    </div>
+                </div>
+                <a href="{{ url_for('main.logout') }}" class="btn btn-danger" style="width: 100%;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Mobile Sidebar Toggle -->
+            <button class="sidebar-toggle" id="sidebar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <div class="content">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebarToggleDesktop = document.getElementById('sidebar-toggle-desktop');
+
+            // Mobile toggle
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('open');
+            });
+
+            // Desktop toggle (collapse/expand)
+            sidebarToggleDesktop.addEventListener('click', function() {
+                document.body.classList.toggle('sidebar-collapsed');
+            });
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnToggle = sidebarToggle.contains(event.target);
+
+                if (!isClickInsideSidebar && !isClickOnToggle && window.innerWidth <= 768 && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                }
+            });
+
+            // Initialize tooltips if Bootstrap is available
+            if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                    new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            }
+
+            // Initialize tabs if Bootstrap is available
+            if (typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+                const tabTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tab"]'));
+                tabTriggerList.forEach(function(tabTriggerEl) {
+                    new bootstrap.Tab(tabTriggerEl);
+                });
+            }
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
 
