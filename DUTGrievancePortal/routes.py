@@ -1,16 +1,27 @@
-from flask import Blueprint, app, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_user, logout_user, current_user, login_required
 from .extensions import db, login_manager  # Import from extensions.py
-from .models import Feedback, User, Complaint, Notification
+from .models import User, Complaint, Notification
 from .forms import ComplaintForm, RegistrationForm, LoginForm
 from datetime import datetime, timedelta
 from .utils import generate_reference_id, create_notification
 from werkzeug.utils import secure_filename
+from flask import render_template, request, redirect, url_for, flash
+from .models import User, Complaint, Notification  # Import your models
+from .forms import AddUserForm, AddComplaintForm, AddNotificationForm  # You'll need to create these forms
+from .extensions import db
+from flask import render_template, request, redirect, url_for, flash
+from .models import User, Complaint, Notification
+from .forms import EditUserForm, EditComplaintForm, EditNotificationForm  # You'll need to create these forms
+from flask import redirect, url_for, flash
+from .models import User, Complaint, Notification
+from .extensions import db
 import os
 
 # Create blueprints
 main_bp = Blueprint('main', __name__)
 staff_bp = Blueprint('staff', __name__, url_prefix='/staff')
+admin_bp = Blueprint('admin', __name__)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -79,16 +90,23 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user)
+            
+            # Check if the email belongs to an admin
+            if form.email.data.startswith('admin') and form.email.data.endswith('dut4life.ac.za') and len(form.email.data.split('@')[0]) == 11:
+                return redirect(url_for('admin.admin_dashboard'))
+            
             # Redirect based on the student/staff number length
             if len(user.student_staff_number) == 4:  # Staff (4 digits)
-                return redirect(url_for('staff.staff_dashboard'))  # Corrected
+                return redirect(url_for('staff.staff_dashboard'))
             elif len(user.student_staff_number) == 8:  # Student (8 digits)
                 return redirect(url_for('main.dashboard'))
             else:
                 flash('Invalid student/staff number format', 'danger')
                 return redirect(url_for('main.login'))
+                
         flash('Invalid email or password', 'danger')
     return render_template('login.html', form=form)
+
 
 @main_bp.route('/logout')
 @login_required
@@ -340,34 +358,147 @@ def logout():
     return redirect(url_for('main.index'))
 
 
-@main_bp.route('/submit-feedback', methods=['POST'])
-def submit_feedback():
-    rating = request.form.get('rating')
-    comments = request.form.get('comments')
-    complaint_id = request.form.get('complaint_id')
-    user_id = request.form.get('user_id')
 
-    if not rating:
-        flash("Please select a rating!", "error")
-        return redirect(url_for('feedback_form'))  # Redirect back to form if no rating
+@admin_bp.route('/admin_dashboard')
+@login_required
+def admin_dashboard():
+    if not (current_user.email.startswith('admin') and current_user.email.endswith('dut4life.ac.za') and len(current_user.email.split('@')[0]) == 11):
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('main.index'))
+    return render_template('admin_dashboard.html')
 
-    feedback = Feedback(
-        complaint_id=complaint_id,
-        user_id=user_id,
-        rating=int(rating),
-        comments=comments
+@admin_bp.route('/database')
+def admin_database():
+    # Query all users, complaints, and notifications with pagination
+    page = request.args.get('page', 1, type=int)  # Get the current page number
+    per_page = 10  # Number of items per page
+
+    users = User.query.paginate(page=page, per_page=per_page)
+    complaints = Complaint.query.paginate(page=page, per_page=per_page)
+    notifications = Notification.query.paginate(page=page, per_page=per_page)
+
+    return render_template(
+        'admin_database.html',
+        users=users,
+        complaints=complaints,
+        notifications=notifications
     )
 
-    db.session.add(feedback)
+# Add User
+@admin_bp.route('/database/user/add', methods=['GET', 'POST'])
+def add_user():
+    form = AddUserForm()
+    if form.validate_on_submit():
+        user = User(
+            email=form.email.data,
+            student_staff_number=form.student_staff_number.data,
+            is_staff=form.is_staff.data
+        )
+        user.set_password(form.password.data)  # Set a default password
+        db.session.add(user)
+        db.session.commit()
+        flash('User added successfully!', 'success')
+        return redirect(url_for('admin.admin_database'))
+    return render_template('add_user.html', form=form)
+
+# Add Complaint
+@admin_bp.route('/database/complaint/add', methods=['GET', 'POST'])
+def add_complaint():
+    form = AddComplaintForm()
+    if form.validate_on_submit():
+        complaint = Complaint(
+            category=form.category.data,
+            sub_topic=form.sub_topic.data,
+            subject_line=form.subject_line.data,
+            description=form.description.data,
+            user_id=form.user_id.data
+        )
+        db.session.add(complaint)
+        db.session.commit()
+        flash('Complaint added successfully!', 'success')
+        return redirect(url_for('admin.admin_database'))
+    return render_template('add_complaint.html', form=form)
+
+# Add Notification
+@admin_bp.route('/database/notification/add', methods=['GET', 'POST'])
+def add_notification():
+    form = AddNotificationForm()
+    if form.validate_on_submit():
+        notification = Notification(
+            user_id=form.user_id.data,
+            message=form.message.data,
+            is_read=form.is_read.data
+        )
+        db.session.add(notification)
+        db.session.commit()
+        flash('Notification added successfully!', 'success')
+        return redirect(url_for('admin.admin_database'))
+    return render_template('add_notification.html', form=form)
+
+# Edit User
+@admin_bp.route('/database/user/edit/<int:id>', methods=['GET', 'POST'])
+def edit_user(id):
+    user = User.query.get_or_404(id)
+    form = EditUserForm(obj=user)  # Pre-populate the form with the user's data
+    if form.validate_on_submit():
+        form.populate_obj(user)  # Update the user object with form data
+        db.session.commit()
+        flash('User updated successfully!', 'success')
+        return redirect(url_for('admin.admin_database'))
+    return render_template('edit_user.html', form=form, user=user)
+
+# Edit Complaint
+@admin_bp.route('/database/complaint/edit/<int:id>', methods=['GET', 'POST'])
+def edit_complaint(id):
+    complaint = Complaint.query.get_or_404(id)
+    form = EditComplaintForm(obj=complaint)  # Pre-populate the form with the complaint's data
+    if form.validate_on_submit():
+        form.populate_obj(complaint)  # Update the complaint object with form data
+        db.session.commit()
+        flash('Complaint updated successfully!', 'success')
+        return redirect(url_for('admin.admin_database'))
+    return render_template('edit_complaint.html', form=form, complaint=complaint)
+
+# Edit Notification
+@admin_bp.route('/database/notification/edit/<int:id>', methods=['GET', 'POST'])
+def edit_notification(id):
+    notification = Notification.query.get_or_404(id)
+    form = EditNotificationForm(obj=notification)  # Pre-populate the form with the notification's data
+    if form.validate_on_submit():
+        form.populate_obj(notification)  # Update the notification object with form data
+        db.session.commit()
+        flash('Notification updated successfully!', 'success')
+        return redirect(url_for('admin.admin_database'))
+    return render_template('edit_notification.html', form=form, notification=notification)
+
+# Delete User
+@admin_bp.route('/database/user/delete/<int:id>', methods=['POST'])
+def delete_user(id):
+    user = User.query.get_or_404(id)
+    db.session.delete(user)
     db.session.commit()
-    
-    flash("Feedback submitted successfully!", "success")
-    return redirect(url_for('feedback_form'))  # Redirect to the feedback page
+    flash('User deleted successfully!', 'success')
+    return redirect(url_for('admin.admin_database'))
 
-@main_bp.route('/feedback')
-def feedback_form():
-    return render_template('rating.html')
+# Delete Complaint
+@admin_bp.route('/database/complaint/delete/<int:id>', methods=['POST'])
+def delete_complaint(id):
+    complaint = Complaint.query.get_or_404(id)
+    db.session.delete(complaint)
+    db.session.commit()
+    flash('Complaint deleted successfully!', 'success')
+    return redirect(url_for('admin.admin_database'))
 
-if __name__ == '__main__':
-    db.create_all()
-    app.run(debug=True)
+# Delete Notification
+@admin_bp.route('/database/notification/delete/<int:id>', methods=['POST'])
+def delete_notification(id):
+    notification = Notification.query.get_or_404(id)
+    db.session.delete(notification)
+    db.session.commit()
+    flash('Notification deleted successfully!', 'success')
+    return redirect(url_for('admin.admin_database'))
+
+
+
+
+
