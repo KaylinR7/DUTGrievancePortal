@@ -1,24 +1,28 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_user, logout_user, current_user, login_required
-from .extensions import db, login_manager  # Import from extensions.py
+from .extensions import db, login_manager  
 from .models import User, Complaint, Notification
-from .forms import ComplaintForm, RegistrationForm, LoginForm
+from .forms import ComplaintForm, LoginForm
 from datetime import datetime, timedelta
 from .utils import generate_reference_id, create_notification
 from werkzeug.utils import secure_filename
 from flask import render_template, request, redirect, url_for, flash
-from .models import User, Complaint, Notification  # Import your models
-from .forms import AddUserForm, AddComplaintForm, AddNotificationForm  # You'll need to create these forms
-from .extensions import db
+from .models import User, Complaint, Notification  
+from .forms import AddUserForm, AddComplaintForm, AddNotificationForm  
 from flask import render_template, request, redirect, url_for, flash
 from .models import User, Complaint, Notification
-from .forms import EditUserForm, EditComplaintForm, EditNotificationForm  # You'll need to create these forms
+from .forms import EditUserForm, EditComplaintForm, EditNotificationForm  
 from flask import redirect, url_for, flash
 from .models import User, Complaint, Notification
 from .extensions import db
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, session  # Added session
+from .models import ComplaintUpdate
+from .models import Feedback
+from .forms import ComplaintFeedbackForm
+
 import os
 
-# Create blueprints
+
 main_bp = Blueprint('main', __name__)
 staff_bp = Blueprint('staff', __name__, url_prefix='/staff')
 admin_bp = Blueprint('admin', __name__)
@@ -27,7 +31,7 @@ admin_bp = Blueprint('admin', __name__)
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# Context processor to inject notification count into all templates
+
 @main_bp.context_processor
 def inject_notification_count():
     if current_user.is_authenticated:
@@ -38,83 +42,54 @@ def inject_notification_count():
         return {'notification_count': notification_count}
     return {}
 
-# Main routes
 @main_bp.route('/')
-@login_required
 def index():
-    return render_template('index.html')
-
-@main_bp.route('/welcome')
-def welcome():
-    return render_template('welcome.html')
-
-@main_bp.route('/register', methods=['GET', 'POST'])
-def register():
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
-    
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        existing_user = User.query.filter(
-            (User.email == form.email.data) | 
-            (User.student_staff_number == form.student_staff_number.data)
-        ).first()
-        
-        if existing_user:
-            flash('Email or Student/Staff number already registered', 'danger')
-            return redirect(url_for('main.register'))
-        
-        # Automatically set is_staff based on the length of student_staff_number
-        is_staff = len(form.student_staff_number.data) == 4  # Staff number is 4 digits
-        
-        user = User(
-            email=form.email.data,
-            student_staff_number=form.student_staff_number.data,
-            is_staff=is_staff  # Set is_staff based on student_staff_number length
-        )
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash('Registration successful! Please login.', 'success')
-        return redirect(url_for('main.login'))
-    
-    return render_template('register.html', form=form)
+        # Check user role and redirect accordingly
+        if current_user.is_admin:
+            return redirect(url_for('admin.admin_dashboard'))
+        elif current_user.is_staff:
+            return redirect(url_for('staff.staff_dashboard'))
+        else:
+            return redirect(url_for('main.dashboard'))
+    return redirect(url_for('main.login'))
 
 @main_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
-    
+        if current_user.is_admin:
+            return redirect(url_for('admin.admin_dashboard'))
+        elif current_user.is_staff:
+            return redirect(url_for('staff.staff_dashboard'))
+        else:
+            return redirect(url_for('main.dashboard'))
+
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(student_staff_number=form.student_staff_number.data).first()
         if user and user.check_password(form.password.data):
             login_user(user)
             
-            # Check if the email belongs to an admin
-            if form.email.data.startswith('admin') and form.email.data.endswith('dut4life.ac.za') and len(form.email.data.split('@')[0]) == 11:
-                return redirect(url_for('admin.admin_dashboard'))
-            
-            # Redirect based on the student/staff number length
-            if len(user.student_staff_number) == 4:  # Staff (4 digits)
-                return redirect(url_for('staff.staff_dashboard'))
-            elif len(user.student_staff_number) == 8:  # Student (8 digits)
-                return redirect(url_for('main.dashboard'))
+            next_page = request.args.get('next')
+            if user.is_admin:
+                return redirect(next_page or url_for('admin.admin_dashboard'))
+            elif user.is_staff:
+                return redirect(next_page or url_for('staff.staff_dashboard'))
             else:
-                flash('Invalid student/staff number format', 'danger')
-                return redirect(url_for('main.login'))
-                
-        flash('Invalid email or password', 'danger')
+                return redirect(next_page or url_for('main.dashboard'))
+        else:
+            flash('Invalid credentials', 'danger')
+    
     return render_template('login.html', form=form)
-
 
 @main_bp.route('/logout')
 @login_required
 def logout():
-    logout_user()
-    return redirect(url_for('main.welcome'))
+    logout_user()  # ? Proper Flask-Login logout
+    return redirect(url_for('main.login'))  # ? Use url_for
 
-# Complaint management routes
+
+
 @main_bp.route('/submit-complaint', methods=['GET', 'POST'])
 @login_required
 def submit_complaint():
@@ -126,7 +101,7 @@ def submit_complaint():
             form.sub_topic.data if form.category.data != 'general' else None
         )
         
-        # Handle file upload
+     
         attachment_path = None
         if form.attachment.data:
             filename = secure_filename(f"{ref_id}_{form.attachment.data.filename}")
@@ -180,7 +155,6 @@ def complaint_history():
     complaints = Complaint.query.filter_by(user_id=current_user.id).all()
     return render_template('complaint_history.html', complaints=complaints, now=now, timedelta=timedelta)
 
-# Notification management routes
 @main_bp.route('/notifications')
 @login_required
 def notifications():
@@ -233,7 +207,6 @@ def delete_notification(id):
     flash('Notification deleted', 'success')
     return redirect(url_for('main.notifications'))
 
-# Complaint resolution route
 @main_bp.route('/respond-to-complaint/<int:complaint_id>', methods=['POST'])
 @login_required
 def main_respond_to_complaint(complaint_id):
@@ -252,22 +225,91 @@ def main_respond_to_complaint(complaint_id):
     flash('Complaint resolved successfully', 'success')
     return redirect(url_for('main.dashboard'))
 
-@main_bp.route('/view_complaint/<int:id>')  # Add <int:id> to the route to accept a complaint ID
+@main_bp.route('/view_complaint/<int:id>')  
 @login_required
 def view_complaint(id):
-    # Fetch the complaint from the database using the provided ID
+   
     complaint = Complaint.query.get_or_404(id)
     
-    # Ensure the complaint belongs to the current user (or staff, if applicable)
+   
     if complaint.user_id != current_user.id and not current_user.is_staff:
         flash('You do not have permission to view this complaint.', 'danger')
         return redirect(url_for('main.dashboard'))
-    
-    # Calculate the deadline
+ 
     deadline = complaint.created_at + timedelta(hours=72)
     
-    # Render the template with the complaint and deadline
+    
     return render_template('view_complaint.html', complaint=complaint, deadline=deadline)
+
+@main_bp.route('/provide-feedback/<int:complaint_id>', methods=['GET', 'POST'])
+@login_required
+def provide_feedback(complaint_id):
+    complaint = Complaint.query.get_or_404(complaint_id)
+    
+    # Check if this complaint belongs to the current user
+    if complaint.user_id != current_user.id:
+        flash('You do not have permission to provide feedback for this complaint.', 'danger')
+        return redirect(url_for('main.dashboard'))
+    
+    # Check if feedback already exists
+    existing_feedback = Feedback.query.filter_by(complaint_id=complaint_id, user_id=current_user.id).first()
+    if existing_feedback:
+        flash('You have already provided feedback for this complaint.', 'warning')
+        return redirect(url_for('main.view_complaint', id=complaint_id))
+    
+    # Check if the complaint is in a state where feedback is appropriate
+    if complaint.status not in ['Resolved', 'In Progress']:
+        flash('This complaint is not yet ready for feedback.', 'warning')
+        return redirect(url_for('main.view_complaint', id=complaint_id))
+    
+    form = ComplaintFeedbackForm()
+    
+    if form.validate_on_submit():
+        # Create new feedback
+        feedback = Feedback(
+            complaint_id=complaint_id,
+            user_id=current_user.id,
+            rating=form.rating.data,
+            comments=form.comments.data
+        )
+        
+        db.session.add(feedback)
+        
+        # If rating is low (1 or 2), reopen the complaint
+        if form.rating.data <= 2:
+            complaint.status = 'Reopened'
+            
+            # Create notification for staff
+            create_notification(
+                complaint.user_id,  # This should ideally notify staff, but for now we'll use the same user
+                f"Complaint {complaint.reference_id} has been reopened due to unsatisfactory resolution."
+            )
+            
+            flash('Thank you for your feedback. Your complaint has been reopened for further review.', 'info')
+        else:
+            # For ratings 3-5, mark as fully resolved if not already
+            if complaint.status != 'Resolved':
+                complaint.status = 'Resolved'
+            
+            flash('Thank you for your feedback. We appreciate your input.', 'success')
+        
+        db.session.commit()
+        return redirect(url_for('main.view_complaint', id=complaint_id))
+    
+    return render_template('provide_feedback.html', form=form, complaint=complaint)
+
+# Add this route to handle reopened complaints
+@staff_bp.route('/reopened-complaints')
+@login_required
+def reopened_complaints():
+    if not current_user.is_staff:
+        flash('You do not have permission to access this page.', 'danger')
+        return redirect(url_for('main.dashboard'))
+    
+    complaints = Complaint.query.filter_by(status='Reopened').all()
+    return render_template('staff_reopened_complaints.html', complaints=complaints)
+
+
 
 @main_bp.route('/faqs')
 def faqs():
@@ -284,20 +326,28 @@ def staff_dashboard():
         flash('You do not have permission to access this page.', 'danger')
         return redirect(url_for('main.dashboard'))
     
-    # Get stats for the dashboard
+    # Get counts for all statuses
     new_complaints = Complaint.query.filter_by(status='Pending').count()
     resolved_complaints = Complaint.query.filter_by(status='Resolved').count()
     in_progress_complaints = Complaint.query.filter_by(status='In Progress').count()
-    
-    # Get the first new complaint (if any)
-    first_new_complaint = Complaint.query.filter_by(status='Pending').first()
-    
+    reopened_complaints = Complaint.query.filter_by(status='Reopened').count()
+
+    # Get recent complaints (last 5 pending or in progress)
+    recent_complaints = Complaint.query.filter(
+        Complaint.status.in_(['Pending', 'In Progress'])
+    ).order_by(Complaint.created_at.desc()).limit(5).all()
+
+    # Get reopened complaints
+    reopened_complaints_list = Complaint.query.filter_by(status='Reopened').order_by(Complaint.created_at.desc()).all()
+
     return render_template(
         'staff_dashboard.html',
         new_complaints=new_complaints,
         resolved_complaints=resolved_complaints,
         in_progress_complaints=in_progress_complaints,
-        complaint=first_new_complaint  # Pass the first new complaint (may be None)
+        reopened_complaints=reopened_complaints,
+        recent_complaints=recent_complaints,
+        reopened_complaints_list=reopened_complaints_list  # Add this
     )
 
 @staff_bp.route('/complaints')
@@ -321,33 +371,84 @@ def staff_history():
     return render_template('staff_history.html', complaints=resolved_complaints)
 
 
+
+
+# Replace the conflicting route with this one (use a different name)
+
+@staff_bp.route('/complaints-needing-attention')  # Changed from '/reopened-complaints'
+@login_required
+def complaints_needing_attention():  # Changed from 'reopened_complaints'
+    if not current_user.is_staff:
+        flash('You do not have permission to access this page.', 'danger')
+        return redirect(url_for('main.dashboard'))
+    
+    complaints = Complaint.query.filter_by(status='Reopened').all()
+    return render_template('staff_complaints_needing_attention.html', complaints=complaints)  # Changed template name
+
+@staff_bp.route('/view_complaint/<int:complaint_id>')  # <-- Note complaint_id parameter
+@login_required
+def staff_view_complaint(complaint_id):  # <-- Match parameter name
+    if not current_user.is_staff:
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('main.dashboard'))
+
+    complaint = Complaint.query.get_or_404(complaint_id)
+    updates = ComplaintUpdate.query.filter_by(complaint_id=complaint.id).order_by(ComplaintUpdate.update_time.desc()).all()
+    
+    return render_template(
+        'staff_view_complaint.html', 
+        complaint=complaint,
+        updates=updates
+    )
+
+
+
+# Update your existing staff_respond_to_complaint route
+
 @staff_bp.route('/respond-to-complaint/<int:complaint_id>', methods=['GET', 'POST'])
 @login_required
 def staff_respond_to_complaint(complaint_id):
     if not current_user.is_staff:
         flash('You do not have permission to perform this action', 'danger')
-        return redirect(url_for('main.dashboard'))  # Redirect to staff dashboard if unauthorized
+        return redirect(url_for('main.dashboard'))  
 
     complaint = Complaint.query.get_or_404(complaint_id)
 
     if request.method == 'POST':
-        # Handle the form submission for responding to the complaint
         response = request.form.get('response')
+        resolution_type = request.form.get('resolution_type')
+        
         if response:
-            complaint.status = 'Resolved'
-            complaint.response = response
-            db.session.commit()
-
-            # Notify the student about the response
+            # Add a complaint update
+            update = ComplaintUpdate(
+                complaint_id=complaint.id,
+                updated_by=f"Staff #{current_user.student_staff_number}",
+                update_text=response
+            )
+            db.session.add(update)
+            
+            # Change status based on resolution type
+            if resolution_type == 'resolve':
+                complaint.status = 'Resolved'
+                message = f"Your complaint ({complaint.reference_id}) has been resolved. Please provide feedback on the resolution."
+            else:
+                complaint.status = 'In Progress'
+                message = f"There's an update on your complaint ({complaint.reference_id}). Please check your dashboard."
+            
+            # Create notification for the student
             create_notification(
                 complaint.user_id,
-                f"Your complaint ({complaint.reference_id}) has been resolved."
+                message
             )
-            flash('Complaint resolved successfully', 'success')
-            return redirect(url_for('staff.staff_complaints'))  # Redirect back to complaints list
+            
+            db.session.commit()
+            flash('Response submitted successfully', 'success')
+            return redirect(url_for('staff.staff_complaints'))  
 
-    # For GET requests, render the response form
-    return render_template('respond_to_complaint.html', complaint=complaint)
+    # Get all updates for this complaint
+    updates = ComplaintUpdate.query.filter_by(complaint_id=complaint.id).order_by(ComplaintUpdate.update_time.desc()).all()
+    
+    return render_template('respond_to_complaint.html', complaint=complaint, updates=updates)
 
 
 
@@ -359,19 +460,24 @@ def logout():
 
 
 
-@admin_bp.route('/admin_dashboard')
+# Replace the old email-based admin check with this
+def is_admin(user):
+    return user.is_admin
+
+@admin_bp.route('/dashboard')
 @login_required
+
 def admin_dashboard():
-    if not (current_user.email.startswith('admin') and current_user.email.endswith('dut4life.ac.za') and len(current_user.email.split('@')[0]) == 11):
-        flash('Unauthorized access.', 'danger')
-        return redirect(url_for('main.index'))
+    if not current_user.is_admin:
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('main.dashboard'))
     return render_template('admin_dashboard.html')
 
 @admin_bp.route('/database')
 def admin_database():
-    # Query all users, complaints, and notifications with pagination
-    page = request.args.get('page', 1, type=int)  # Get the current page number
-    per_page = 10  # Number of items per page
+   
+    page = request.args.get('page', 1, type=int)  
+    per_page = 10  
 
     users = User.query.paginate(page=page, per_page=per_page)
     complaints = Complaint.query.paginate(page=page, per_page=per_page)
@@ -384,24 +490,22 @@ def admin_database():
         notifications=notifications
     )
 
-# Add User
+
 @admin_bp.route('/database/user/add', methods=['GET', 'POST'])
 def add_user():
     form = AddUserForm()
     if form.validate_on_submit():
         user = User(
-            email=form.email.data,
             student_staff_number=form.student_staff_number.data,
             is_staff=form.is_staff.data
         )
-        user.set_password(form.password.data)  # Set a default password
+        user.password = form.password.data  # Use the property setter instead
         db.session.add(user)
         db.session.commit()
         flash('User added successfully!', 'success')
         return redirect(url_for('admin.admin_database'))
     return render_template('add_user.html', form=form)
 
-# Add Complaint
 @admin_bp.route('/database/complaint/add', methods=['GET', 'POST'])
 def add_complaint():
     form = AddComplaintForm()
@@ -419,7 +523,6 @@ def add_complaint():
         return redirect(url_for('admin.admin_database'))
     return render_template('add_complaint.html', form=form)
 
-# Add Notification
 @admin_bp.route('/database/notification/add', methods=['GET', 'POST'])
 def add_notification():
     form = AddNotificationForm()
@@ -435,43 +538,43 @@ def add_notification():
         return redirect(url_for('admin.admin_database'))
     return render_template('add_notification.html', form=form)
 
-# Edit User
+
 @admin_bp.route('/database/user/edit/<int:id>', methods=['GET', 'POST'])
 def edit_user(id):
     user = User.query.get_or_404(id)
-    form = EditUserForm(obj=user)  # Pre-populate the form with the user's data
+    form = EditUserForm(obj=user)  
     if form.validate_on_submit():
-        form.populate_obj(user)  # Update the user object with form data
+        form.populate_obj(user)  
         db.session.commit()
         flash('User updated successfully!', 'success')
         return redirect(url_for('admin.admin_database'))
     return render_template('edit_user.html', form=form, user=user)
 
-# Edit Complaint
+
 @admin_bp.route('/database/complaint/edit/<int:id>', methods=['GET', 'POST'])
 def edit_complaint(id):
     complaint = Complaint.query.get_or_404(id)
-    form = EditComplaintForm(obj=complaint)  # Pre-populate the form with the complaint's data
+    form = EditComplaintForm(obj=complaint) 
     if form.validate_on_submit():
-        form.populate_obj(complaint)  # Update the complaint object with form data
+        form.populate_obj(complaint)  
         db.session.commit()
         flash('Complaint updated successfully!', 'success')
         return redirect(url_for('admin.admin_database'))
     return render_template('edit_complaint.html', form=form, complaint=complaint)
 
-# Edit Notification
+
 @admin_bp.route('/database/notification/edit/<int:id>', methods=['GET', 'POST'])
 def edit_notification(id):
     notification = Notification.query.get_or_404(id)
-    form = EditNotificationForm(obj=notification)  # Pre-populate the form with the notification's data
+    form = EditNotificationForm(obj=notification)  
     if form.validate_on_submit():
-        form.populate_obj(notification)  # Update the notification object with form data
+        form.populate_obj(notification)  
         db.session.commit()
         flash('Notification updated successfully!', 'success')
         return redirect(url_for('admin.admin_database'))
     return render_template('edit_notification.html', form=form, notification=notification)
 
-# Delete User
+
 @admin_bp.route('/database/user/delete/<int:id>', methods=['POST'])
 def delete_user(id):
     user = User.query.get_or_404(id)
@@ -480,7 +583,6 @@ def delete_user(id):
     flash('User deleted successfully!', 'success')
     return redirect(url_for('admin.admin_database'))
 
-# Delete Complaint
 @admin_bp.route('/database/complaint/delete/<int:id>', methods=['POST'])
 def delete_complaint(id):
     complaint = Complaint.query.get_or_404(id)
@@ -489,7 +591,7 @@ def delete_complaint(id):
     flash('Complaint deleted successfully!', 'success')
     return redirect(url_for('admin.admin_database'))
 
-# Delete Notification
+
 @admin_bp.route('/database/notification/delete/<int:id>', methods=['POST'])
 def delete_notification(id):
     notification = Notification.query.get_or_404(id)
