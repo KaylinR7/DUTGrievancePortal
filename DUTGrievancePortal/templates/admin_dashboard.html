@@ -1,29 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container mt-5">
-        <div class="card shadow-lg">
-            <div class="card-body">
-                <h1 class="text-center">Welcome to the Admin Dashboard</h1>
-                <hr>
-                <div class="text-center">
-                    <p>Use the navigation menu to manage users, view reports, and perform administrative tasks.</p>
+{% extends "admin_base.html" %}  <!-- Correct path -->
 
-                    <!-- Database Button -->
-                    <a href="{{ url_for('admin.admin_database') }}" class="btn btn-info">Database</a>
+{% block title %}Dashboard{% endblock %}
 
-                    <!-- Other Buttons -->
-                    <a href="{{ url_for('main.index') }}" class="btn btn-primary">Go to Homepage</a>
-                    <a href="{{ url_for('main.logout') }}" class="btn btn-danger">Logout</a>
+{% block content %}
+<div class="dashboard-container">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Admin Dashboard</h2>
+            <p class="card-description">Manage users, complaints, and notifications</p>
+        </div>
+        <div class="card-content">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                <a href="{{ url_for('admin.admin_database') }}" class="action-card">
+                    <div style="background-color: var(--primary-light); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
+                        <i class="fas fa-database" style="font-size: 1.5rem; color: var(--primary);"></i>
+                    </div>
+                    <h3>Database Management</h3>
+                    <p>Manage users, complaints, and notifications</p>
+                </a>
+
+                <a href="{{ url_for('admin.add_user') }}" class="action-card">
+                    <div style="background-color: var(--primary-light); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
+                        <i class="fas fa-user-plus" style="font-size: 1.5rem; color: var(--primary);"></i>
+                    </div>
+                    <h3>Add User</h3>
+                    <p>Create new student or staff accounts</p>
+                </a>
+
+                <a href="{{ url_for('admin.add_complaint') }}" class="action-card">
+                    <div style="background-color: var(--primary-light); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
+                        <i class="fas fa-file-alt" style="font-size: 1.5rem; color: var(--primary);"></i>
+                    </div>
+                    <h3>Add Complaint</h3>
+                    <p>Create new complaints on behalf of users</p>
+                </a>
+            </div>
+
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <h3 class="card-title">System Overview</h3>
+                </div>
+                <div class="card-content">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div style="border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">{{ users_count }}</div>
+                            <div style="color: var(--muted-foreground); font-size: 0.875rem;">Total Users</div>
+                        </div>
+                        <div style="border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">{{ complaints_count }}</div>
+                            <div style="color: var(--muted-foreground); font-size: 0.875rem;">Total Complaints</div>
+                        </div>
+                        <div style="border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">{{ active_complaints_count }}</div>
+                            <div style="color: var(--muted-foreground); font-size: 0.875rem;">Active Complaints</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="card-footer" style="padding: 1.5rem; border-top: 1px solid var(--border); text-align: center;">
+            <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+                <i class="fas fa-home"></i>
+                Go to Homepage
+            </a>
+        </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}
+
