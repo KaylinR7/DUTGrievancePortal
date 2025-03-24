@@ -1,12 +1,11 @@
 import os
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-fallback-key')
+    # Get from environment variables (never hardcode!)
+    SECRET_KEY = os.environ.get('SECRET_KEY')  
     
-    # Get database URL with proper validation
-    DB_URL = os.environ.get('postgresql://dutgreivanceportal_user:bxnLojOc7vZDSnS6h1mDPDwcUK0v0IFZ@dpg-cvgr7h8fnakc73elosj0-a/dutgreivanceportal', '')
-    if not DB_URL:
-        raise ValueError("No DATABASE_URL set in environment variables")
-        
-    SQLALCHEMY_DATABASE_URI = DB_URL.replace('postgres://', 'postgresql://', 1)
+    # Let Render auto-inject DATABASE_URL
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', '').replace(
+        'postgres://', 'postgresql://', 1
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
