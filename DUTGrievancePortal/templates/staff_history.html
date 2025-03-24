@@ -1,0 +1,219 @@
+{% extends "staff_base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Complaint History</h2>
+            <p class="card-description">View all past complaints and their resolutions</p>
+        </div>
+        <div class="card-content">
+            <!-- Filter and Search -->
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label for="category-filter" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Filter by Category</label>
+                    <select id="category-filter" class="form-control">
+                        <option value="">All Categories</option>
+                        <option value="academics">Academics</option>
+                        <option value="faculty">Faculty</option>
+                        <option value="maintenance">Maintenance</option>
+                        <option value="health_safety">Health & Safety</option>
+                        <option value="general">General</option>
+                    </select>
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <label for="status-filter" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Filter by Status</label>
+                    <select id="status-filter" class="form-control">
+                        <option value="">All Statuses</option>
+                        <option value="Resolved">Resolved</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Reopened">Reopened</option>
+                    </select>
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <label for="date-filter" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Filter by Date</label>
+                    <select id="date-filter" class="form-control">
+                        <option value="">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="year">This Year</option>
+                    </select>
+                </div>
+                <div style="flex: 2; min-width: 300px;">
+                    <label for="search" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Search</label>
+                    <div style="position: relative;">
+                        <input type="text" id="search" class="form-control" placeholder="Search by reference ID, subject, or description...">
+                        <i class="fas fa-search" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: var(--muted-foreground);"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complaints Table -->
+            {% if complaints %}
+            <div style="overflow-x: auto;">
+                <table class="complaints-table" id="complaints-table">
+                    <thead>
+                        <tr>
+                            <th>Reference ID</th>
+                            <th>Subject</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Submitted</th>
+                            <th>Last Updated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for complaint in complaints %}
+                        <tr data-category="{{ complaint.category }}" data-status="{{ complaint.status }}" data-date="{{ complaint.created_at.strftime('%Y-%m-%d') }}">
+                            <td>{{ complaint.reference_id }}</td>
+                            <td>{{ complaint.subject_line }}</td>
+                            <td>{{ complaint.category|title }}</td>
+                            <td>
+                                <span class="badge {% if complaint.status == 'Resolved' %}badge-green{% elif complaint.status == 'In Progress' %}badge-blue{% elif complaint.status == 'Reopened' %}badge-red{% else %}badge-yellow{% endif %}">
+                                    {{ complaint.status }}
+                                </span>
+                            </td>
+                            <td>{{ complaint.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ complaint.updated_at.strftime('%Y-%m-%d') if complaint.updated_at else 'N/A' }}</td>
+                            <td>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <a href="{{ url_for('staff.staff_view_complaint', complaint_id=complaint.id) }}" class="btn btn-sm btn-outline">
+                                        <i class="fas fa-eye"></i>
+                                        View
+                                    </a>
+                                    {% if complaint.status != 'Resolved' %}
+                                    <a href="{{ url_for('staff.staff_respond_to_complaint', complaint_id=complaint.id) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-reply"></i>
+                                        Respond
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- No Results Message -->
+            <div id="no-results" style="display: none; text-align: center; padding: 2rem; color: var(--muted-foreground);">
+                No complaints match your search criteria.
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 3rem 1rem;">
+                <p style="color: var(--muted-foreground); margin-bottom: 1rem;">No complaint history found.</p>
+                <a href="{{ url_for('staff.staff_dashboard') }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- Pagination -->
+            {% if pagination and pagination.pages > 1 %}
+            <div class="pagination" style="margin-top: 1.5rem;">
+                {% if pagination.has_prev %}
+                <a href="{{ url_for('staff.staff_history', page=pagination.prev_num) }}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                {% endif %}
+
+                {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                <a href="{{ url_for('staff.staff_history', page=page_num) }}" {% if page_num==pagination.page %}class="active" {% endif %}>
+                    {{ page_num }}
+                </a>
+                {% else %}
+                <span>...</span>
+                {% endif %}
+                {% endfor %}
+
+                {% if pagination.has_next %}
+                <a href="{{ url_for('staff.staff_history', page=pagination.next_num) }}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const categoryFilter = document.getElementById('category-filter');
+        const statusFilter = document.getElementById('status-filter');
+        const dateFilter = document.getElementById('date-filter');
+        const searchInput = document.getElementById('search');
+        const complaintsTable = document.getElementById('complaints-table');
+        const noResults = document.getElementById('no-results');
+
+        if (!complaintsTable) return;
+
+        const rows = complaintsTable.querySelectorAll('tbody tr');
+
+        function filterTable() {
+            const categoryValue = categoryFilter.value.toLowerCase();
+            const statusValue = statusFilter.value;
+            const dateValue = dateFilter.value;
+            const searchValue = searchInput.value.toLowerCase();
+
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const category = row.getAttribute('data-category').toLowerCase();
+                const status = row.getAttribute('data-status');
+                const date = row.getAttribute('data-date');
+                const text = row.textContent.toLowerCase();
+
+                const matchesCategory = !categoryValue || category === categoryValue;
+                const matchesStatus = !statusValue || status === statusValue;
+                const matchesSearch = !searchValue || text.includes(searchValue);
+
+                // Date filtering logic
+                let matchesDate = true;
+                if (dateValue) {
+                    const rowDate = new Date(date);
+                    const today = new Date();
+
+                    if (dateValue === 'today') {
+                        matchesDate = rowDate.toDateString() === today.toDateString();
+                    } else if (dateValue === 'week') {
+                        const weekStart = new Date(today);
+                        weekStart.setDate(today.getDate() - today.getDay());
+                        matchesDate = rowDate >= weekStart;
+                    } else if (dateValue === 'month') {
+                        matchesDate = rowDate.getMonth() === today.getMonth() &&
+                                     rowDate.getFullYear() === today.getFullYear();
+                    } else if (dateValue === 'year') {
+                        matchesDate = rowDate.getFullYear() === today.getFullYear();
+                    }
+                }
+
+                if (matchesCategory && matchesStatus && matchesDate && matchesSearch) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (visibleCount === 0) {
+                complaintsTable.style.display = 'none';
+                noResults.style.display = 'block';
+            } else {
+                complaintsTable.style.display = '';
+                noResults.style.display = 'none';
+            }
+        }
+
+        categoryFilter.addEventListener('change', filterTable);
+        statusFilter.addEventListener('change', filterTable);
+        dateFilter.addEventListener('change', filterTable);
+        searchInput.addEventListener('input', filterTable);
+    });
+</script>
+{% endblock %}
+

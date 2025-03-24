@@ -1,0 +1,71 @@
+{% extends "staff_base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Complaints Needing Attention</h2>
+            <p class="card-description">Complaints that require additional review</p>
+        </div>
+        <div class="card-content">
+            {% if complaints %}
+            <div style="overflow-x: auto;">
+                <table class="complaints-table">
+                    <thead>
+                        <tr>
+                            <th>Reference ID</th>
+                            <th>Subject</th>
+                            <th>Category</th>
+                            <th>Submitted</th>
+                            <th>Feedback</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for complaint in complaints %}
+                        <tr>
+                            <td>{{ complaint.reference_id }}</td>
+                            <td>{{ complaint.subject_line }}</td>
+                            <td>{{ complaint.category|title }}</td>
+                            <td>{{ complaint.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                {% set feedback = complaint.feedback|first %}
+                                {% if feedback %}
+                                <span class="badge {% if feedback.rating <= 2 %}badge-red{% elif feedback.rating == 3 %}badge-yellow{% else %}badge-green{% endif %}">
+                                    Rating: {{ feedback.rating }}/5
+                                </span>
+                                {% else %}
+                                <span class="badge badge-yellow">No Feedback</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('staff.staff_respond_to_complaint', complaint_id=complaint.id) }}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-reply"></i>
+                                    Respond
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 3rem 1rem;">
+                <p style="color: var(--muted-foreground); margin-bottom: 1rem;">No complaints needing attention at this time.</p>
+                <a href="{{ url_for('staff.staff_dashboard') }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            <a href="{{ url_for('staff.staff_dashboard') }}" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

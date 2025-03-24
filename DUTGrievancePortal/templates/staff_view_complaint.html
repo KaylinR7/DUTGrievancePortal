@@ -1,0 +1,165 @@
+{% extends "staff_base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="card">
+        <div class="card-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 class="card-title">Complaint Details</h2>
+                <span class="badge {% if complaint.status == 'Resolved' %}badge-green{% elif complaint.status == 'In Progress' %}badge-blue{% elif complaint.status == 'Reopened' %}badge-red{% else %}badge-yellow{% endif %}">
+                    {{ complaint.status }}
+                </span>
+            </div>
+            <p class="card-description">Reference ID: {{ complaint.reference_id }}</p>
+        </div>
+        <div class="card-content">
+            <!-- Complaint Details -->
+            <div style="margin-bottom: 2rem;">
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">{{ complaint.subject_line }}</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                    <div style="font-size: 0.875rem; color: var(--muted-foreground);">
+                        <span>Category: </span>
+                        <span style="font-weight: 500; color: var(--foreground);">{{ complaint.category|title }}</span>
+                    </div>
+                    {% if complaint.sub_topic %}
+                    <div style="font-size: 0.875rem; color: var(--muted-foreground);">
+                        <span>Sub-topic: </span>
+                        <span style="font-weight: 500; color: var(--foreground);">{{ complaint.sub_topic|replace('_', ' ')|title }}</span>
+                    </div>
+                    {% endif %}
+                    <div style="font-size: 0.875rem; color: var(--muted-foreground);">
+                        <span>Submitted: </span>
+                        <span style="font-weight: 500; color: var(--foreground);">{{ complaint.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                    </div>
+                    <div style="font-size: 0.875rem; color: var(--muted-foreground);">
+                        <span>Student ID: </span>
+                        <span style="font-weight: 500; color: var(--foreground);">{{ complaint.user_id }}</span>
+                    </div>
+                </div>
+
+                <!-- Complaint Description -->
+                <div style="background-color: var(--accent); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1rem;">
+                    <p>{{ complaint.description }}</p>
+                </div>
+
+                <!-- Attachment if any -->
+                {% if complaint.attachment_path %}
+                <div style="margin-top: 1rem;">
+                    <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">Attachment</h4>
+                    <a href="{{ url_for('static', filename=complaint.attachment_path) }}" class="btn btn-outline" target="_blank">
+                        <i class="fas fa-paperclip"></i>
+                        View Attachment
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Response Timeline -->
+            {% if updates %}
+            <div style="margin-bottom: 2rem;">
+                <h4 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">Response Timeline</h4>
+                <div class="timeline">
+                    {% for update in updates %}
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div style="background-color: var(--primary-light); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 0.5rem;">
+                                <p>{{ update.update_text }}</p>
+                                <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.5rem;">
+                                    By {{ update.updated_by }} on {{ update.update_time.strftime('%Y-%m-%d %H:%M') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Feedback Information -->
+            {% if complaint.feedback %}
+            {% set feedback = complaint.feedback|first %}
+            {% if feedback %}
+            <div style="margin-bottom: 2rem; border: 1px solid {% if feedback.rating <= 2 %}var(--destructive){% elif feedback.rating == 3 %}var(--warning){% else %}var(--success){% endif %}; border-radius: var(--radius); overflow: hidden;">
+                <div style="background-color: {% if feedback.rating <= 2 %}var(--destructive-light){% elif feedback.rating == 3 %}rgba(245, 158, 11, 0.1){% else %}rgba(16, 185, 129, 0.1){% endif %}; padding: 0.75rem 1rem; border-bottom: 1px solid {% if feedback.rating <= 2 %}var(--destructive){% elif feedback.rating == 3 %}var(--warning){% else %}var(--success){% endif %};">
+                    <h4 style="font-size: 1rem; font-weight: 600; margin: 0; color: {% if feedback.rating <= 2 %}var(--destructive){% elif feedback.rating == 3 %}var(--warning){% else %}var(--success){% endif %};">Student Feedback</h4>
+                </div>
+                <div style="padding: 1.5rem;">
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Rating:</strong>
+                        <span class="badge {% if feedback.rating >= 4 %}badge-green{% elif feedback.rating == 3 %}badge-yellow{% else %}badge-red{% endif %}">
+                            {% if feedback.rating == 5 %}
+                            Very Satisfied (5/5)
+                            {% elif feedback.rating == 4 %}
+                            Satisfied (4/5)
+                            {% elif feedback.rating == 3 %}
+                            Neutral (3/5)
+                            {% elif feedback.rating == 2 %}
+                            Unsatisfied (2/5)
+                            {% else %}
+                            Very Unsatisfied (1/5)
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% if feedback.comments %}
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Comments:</strong>
+                        <p style="margin-top: 0.5rem; font-style: italic;">{{ feedback.comments }}</p>
+                    </div>
+                    {% endif %}
+                    <p style="font-size: 0.75rem; color: var(--muted-foreground);">
+                        Submitted on {{ feedback.submitted_at.strftime('%Y-%m-%d %H:%M') }}
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                {% if complaint.status != 'Resolved' %}
+                <a href="{{ url_for('staff.staff_respond_to_complaint', complaint_id=complaint.id) }}" class="btn btn-primary" style="flex: 1;">
+                    <i class="fas fa-reply"></i>
+                    Respond to Complaint
+                </a>
+                {% endif %}
+                <a href="{{ url_for('staff.staff_history') }}" class="btn btn-outline" style="flex: 1;">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to History
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Timeline Styles */
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+        margin-left: 1rem;
+        border-left: 2px solid var(--border);
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        top: 0.75rem;
+        left: -2.25rem;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        background-color: var(--primary);
+        border: 2px solid var(--background);
+    }
+
+    .timeline-content {
+        padding-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
+
