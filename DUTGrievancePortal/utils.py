@@ -1,40 +1,26 @@
-# DUTGrievancePortal/utils.py
-import uuid
 from datetime import datetime
-from .models import Notification, db
+import secrets
 
 def generate_reference_id(category, sub_topic=None):
-    category_map = {
-        'academics': 'ACA',
-        'faculty': 'FAC',
-        'maintenance': 'MNT',
-        'health_safety': 'HLS',
-        'general': 'GEN'
-    }
+    # Generate unique base
+    timestamp = datetime.now().strftime("%m%d%H%M")  # MonthDayHourMinute
+    random_part = secrets.token_hex(2).upper()  # 4-character random string
     
-    sub_topic_map = {
-        'academics_registration': 'REG',
-        'academics_results': 'RES',
-        'faculty_teaching': 'TCH',
-        'faculty_resources': 'RES',
-        'maintenance_cleaning': 'CLN',
-        'maintenance_infrastructure': 'INF',
-        'health_safety_emergency': 'EMG',
-        'health_safety_facilities': 'FAC'
-    }
+    # Create category code
+    category_code = category[:3].upper()
     
-    prefix = category_map.get(category, 'GEN')
-    sub_code = sub_topic_map.get(sub_topic, '')[:3] if sub_topic else ''
-    unique_id = str(uuid.uuid4().hex)[:8].upper()
-    timestamp = datetime.now().strftime('%H%M')
+    # Create sub-topic code if exists
+    sub_code = ""
+    if sub_topic:
+        sub_code = sub_topic.split("_")[-1][:3].upper()
     
-    return f"{prefix}-{sub_code}{timestamp}-{unique_id[-4:]}"
-
-def create_notification(user_id, message):
-    notification = Notification(
-        user_id=user_id,
-        message=message,
-        is_read=False
-    )
-    db.session.add(notification)
-    db.session.commit()
+    # Construct reference ID
+    ref_id = f"{category_code}-{sub_code}{timestamp}-{random_part}"
+    
+    # Ensure uniqueness
+    from .models import Complaint
+    while Complaint.query.filter_by(reference_id=ref_id).first():
+        random_part = secrets.token_hex(2).upper()
+        ref_id = f"{category_code}-{sub_code}{timestamp}-{random_part}"
+    
+    return ref_id
