@@ -155,7 +155,7 @@ def complaint_history():
     complaints = Complaint.query.filter_by(user_id=current_user.id).all()
     return render_template('complaint_history.html', complaints=complaints, now=now, timedelta=timedelta)
 
-@main_bp.route('/Notifications')
+@main_bp.route('/notifications')
 @login_required
 def notifications():
     page = request.args.get('page', 1, type=int)
