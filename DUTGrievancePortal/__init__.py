@@ -1,7 +1,7 @@
 from flask import Flask
 from config import Config  # Now correctly references root config.py
 from .extensions import db, login_manager
-
+ from .routes import main_bp, staff_bp, admin_bp
 
 def create_app(config_class=Config):
     app = Flask(__name__, template_folder="templates")
@@ -16,9 +16,9 @@ def create_app(config_class=Config):
     login_manager.login_message_category = 'danger'
     
     # Register blueprints
-    from .routes import main_bp, staff_bp, admin_bp
-    app.register_blueprint(main_bp)
-    app.register_blueprint(staff_bp)
-    app.register_blueprint(admin_bp)
+   
+   app.register_blueprint(main_bp)
+    app.register_blueprint(staff_bp, url_prefix='/staff')
+    app.register_blueprint(admin_bp, url_prefix='/admin')
     
     return app
