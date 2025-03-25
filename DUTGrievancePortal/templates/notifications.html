@@ -1,1 +1,51 @@
+{% extends "base.html" %}
 
+{% block content %}
+<div class="notifications-container">
+    <h2>Notifications</h2>
+
+   
+    <form method="POST" action="{{ url_for('main.mark_all_notifications_read') }}" style="margin-bottom: 20px;">
+        <button type="submit" class="btn btn-primary">Mark All as Read</button>
+    </form>
+
+   
+    {% if notifications %}
+    <ul class="notifications-list">
+        {% for notification in notifications %}
+        <li class="notification-item {% if notification.is_read %}read{% else %}unread{% endif %}">
+            <div class="notification-content">
+                <p>{{ notification.message }} - <small>{{ notification.created_at.strftime('%Y-%m-%d %H:%M') }}</small></p>
+            </div>
+            <div class="notification-actions">
+               
+                {% if not notification.is_read %}
+                <form method="POST" action="{{ url_for('main.mark_notification_read', id=notification.id) }}" style="display: inline;">
+                    <button type="submit" class="btn btn-sm btn-success">Mark as Read</button>
+                </form>
+                {% endif %}
+
+                
+                <form method="POST" action="{{ url_for('main.delete_notification', id=notification.id) }}" style="display: inline;">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+
+  
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('main.notifications', page=page-1) }}" class="btn btn-sm btn-outline-primary">Previous</a>
+        {% endif %}
+        <span>Page {{ page }} of {{ total_pages }}</span>
+        {% if page < total_pages %}
+        <a href="{{ url_for('main.notifications', page=page+1) }}" class="btn btn-sm btn-outline-primary">Next</a>
+        {% endif %}
+    </div>
+    {% else %}
+    <p>No new notifications.</p>
+    {% endif %}
+</div>
+{% endblock %}
