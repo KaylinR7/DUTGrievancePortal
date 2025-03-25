@@ -16,8 +16,9 @@ def create_app(config_class=Config):
     login_manager.login_message_category = 'danger'
     
     # Register blueprints
-    from .routes import main_bp, staff_bp
+    from .routes import main_bp, staff_bp, admin_bp
     app.register_blueprint(main_bp)
     app.register_blueprint(staff_bp)
+    app.register_blueprint(admin_bp)
     
     return app
