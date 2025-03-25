@@ -1,7 +1,7 @@
 from flask import Flask
 from config import Config  # Now correctly references root config.py
 from .extensions import db, login_manager
- from .routes import main_bp, staff_bp, admin_bp
+from .routes import main_bp, staff_bp, admin_bp
 
 def create_app(config_class=Config):
     app = Flask(__name__, template_folder="templates")
