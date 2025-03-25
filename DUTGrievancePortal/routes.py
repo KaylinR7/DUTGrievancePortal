@@ -452,7 +452,7 @@ def staff_respond_to_complaint(complaint_id):
 
 
 
-@staff_bp.route('/logout', methods=['POST', 'GET'])
+
 @login_required
 def logout():
     logout_user()
