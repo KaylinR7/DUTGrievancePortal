@@ -17,7 +17,7 @@ def create_app(config_class=Config):
     
     # Register blueprints
    
-   app.register_blueprint(main_bp)
+    app.register_blueprint(main_bp)
     app.register_blueprint(staff_bp, url_prefix='/staff')
     app.register_blueprint(admin_bp, url_prefix='/admin')
     
