@@ -61,40 +61,63 @@
                 </div>
             </div>
         </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Send a Message</h2>
-                <p class="card-description">Fill out the form below and we'll get back to you</p>
-            </div>
-            <div class="card-content">
-                <form class="form-container" style="box-shadow: none; padding: 0; max-width: none;">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" id="name" class="form-control" placeholder="Your name">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" class="form-control" placeholder="Your email address">
-                    </div>
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" class="form-control" placeholder="What is this regarding?">
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" class="form-control" rows="5" placeholder="How can we help you?"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
-                </form>
-            </div>
-        </div>
     </div>
 
     <div class="card">
-        <div style="aspect-ratio: 16/9; width: 100%; background-color: var(--muted); border-radius: var(--radius); overflow: hidden; display: flex; align-items: center; justify-content: center; color: var(--muted-foreground);">
-            <p>Interactive Map Would Be Displayed Here</p>
+        <div class="card-header">
+            <h2 class="card-title">Our Location</h2>
+            <p class="card-description">Find us on campus</p>
+        </div>
+        <div class="card-content">
+            <div id="map" style="aspect-ratio: 16/9; width: 100%; border-radius: var(--radius); overflow: hidden;"></div>
         </div>
     </div>
 </div>
+
+<script>
+    // Initialize and add the map
+    function initMap() {
+        // The location of DUT (Durban University of Technology)
+        const dut = { lat: -29.8536, lng: 31.0218 };
+        
+        // The map, centered at DUT
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center: dut,
+            mapTypeControl: true,
+            streetViewControl: true,
+            fullscreenControl: true,
+        });
+        
+        // The marker, positioned at DUT
+        const marker = new google.maps.Marker({
+            position: dut,
+            map: map,
+            title: "Durban University of Technology",
+            animation: google.maps.Animation.DROP
+        });
+        
+        // Add an info window
+        const infoWindow = new google.maps.InfoWindow({
+            content: `
+                <div style="padding: 10px;">
+                    <h3 style="margin: 0 0 5px 0;">Durban University of Technology</h3>
+                    <p style="margin: 0 0 5px 0;">123 University Road</p>
+                    <p style="margin: 0;">Durban, South Africa</p>
+                </div>
+            `
+        });
+        
+        // Open info window when marker is clicked
+        marker.addListener("click", () => {
+            infoWindow.open(map, marker);
+        });
+        
+        // Open info window by default
+        infoWindow.open(map, marker);
+    }
+</script>
+
+<!-- Load the Google Maps JavaScript API with your API key -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBwtNSU8-PJrvCAUpfzaCZxpnt4wz7ssyA&callback=initMap" async defer></script>
 {% endblock %}
