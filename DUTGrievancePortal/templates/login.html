@@ -9,9 +9,9 @@
         {{ form.hidden_tag() }}
 
         <div class="form-group">
-            {{ form.identifier.label }}
-            {{ form.identifier(class="form-control", placeholder="Enter your email (students) or staff number (staff/admin)") }}
-            {% for error in form.identifier.errors %}
+            {{ form.student_staff_number.label }}
+            {{ form.student_staff_number(class="form-control", placeholder="Enter your student/staff number") }}
+            {% for error in form.student_staff_number.errors %}
             <span class="text-danger">{{ error }}</span>
             {% endfor %}
         </div>
@@ -19,7 +19,7 @@
         <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 {{ form.password.label }}
-                <a href="{{ url_for('main.forgot_password') }}" class="text-primary" style="font-size: 0.875rem;">Forgot Password?</a>
+                <a href="#" class="text-primary" style="font-size: 0.875rem;"></a>
             </div>
             {{ form.password(class="form-control") }}
             {% for error in form.password.errors %}
@@ -29,10 +29,6 @@
 
         <div class="form-group">
             {{ form.submit(class="btn btn-primary", style="width: 100%;") }}
-        </div>
-        
-        <div class="text-center mt-3">
-            <p>Don't have an account? <a href="{{ url_for('main.register') }}">Register here</a> (Students only)</p>
         </div>
     </form>
 </div>
