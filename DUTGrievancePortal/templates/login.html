@@ -9,9 +9,9 @@
         {{ form.hidden_tag() }}
 
         <div class="form-group">
-            {{ form.student_staff_number.label }}
-            {{ form.student_staff_number(class="form-control", placeholder="Enter your student/staff number") }}
-            {% for error in form.student_staff_number.errors %}
+            {{ form.email.label }}
+            {{ form.email(class="form-control", placeholder="Enter your email") }}
+            {% for error in form.email.errors %}
             <span class="text-danger">{{ error }}</span>
             {% endfor %}
         </div>
@@ -29,6 +29,10 @@
 
         <div class="form-group">
             {{ form.submit(class="btn btn-primary", style="width: 100%;") }}
+        </div>
+        
+        <div class="text-center mt-3">
+            <p>Don't have an account? <a href="{{ url_for('main.register') }}">Register here</a></p>
         </div>
     </form>
 </div>
