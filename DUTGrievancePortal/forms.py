@@ -11,7 +11,7 @@ from wtforms import StringField, PasswordField, BooleanField, validators
 class LoginForm(FlaskForm):
     student_staff_number = StringField('Student/Staff Number', validators=[
         validators.InputRequired(),
-        validators.Length(min=6, message="Number must be at least 8 characters")
+        validators.Length(min=5, message="Number must be at least 8 characters")
     ])
     password = PasswordField('Password', validators=[validators.InputRequired()])
     remember = BooleanField('Remember Me')
