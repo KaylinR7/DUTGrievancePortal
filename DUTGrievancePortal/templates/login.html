@@ -1,25 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-<body class="login-page">
 <div class="login-container">
     <div class="form-container login-form">
         <div class="login-header">
-            <h2>Login to Portal</h2>
-            <p>Enter your credentials to access your account</p>
+            <h2>DUT Grievance Portal</h2>
+            <p>Sign in with your student or staff number</p>
         </div>
         
         <form method="POST">
             {{ form.hidden_tag() }}
             
             <div class="form-group">
-                {{ form.identifier.label }}
-                {{ form.identifier(class="form-control", placeholder="Email or Staff Number") }}
+                {{ form.student_staff_number.label }}
+                {{ form.student_staff_number(class="form-control", placeholder="Enter your student/staff number") }}
             </div>
             
             <div class="form-group">
                 {{ form.password.label }}
-                {{ form.password(class="form-control") }}
+                {{ form.password(class="form-control", placeholder="Enter your password") }}
             </div>
             
             <div class="remember-me">
@@ -27,13 +26,13 @@
                 {{ form.remember.label(class="form-check-label") }}
             </div>
             
-            <button type="submit" class="btn btn-primary">Login</button>
+            <button type="submit" class="btn btn-primary">Sign In</button>
             
             <div class="login-footer">
-                Don't have an account? <a href="{{ url_for('main.register') }}">Register here</a>
+                <p>Don't have an account? <a href="{{ url_for('main.register') }}">Register here</a></p>
+                <p>Need help? <a href="{{ url_for('main.contact') }}">Contact support</a></p>
             </div>
         </form>
     </div>
 </div>
-</body>
 {% endblock %}
