@@ -66,32 +66,20 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        # Check if identifier is email (students) or staff number (staff/admin)
-        if '@' in form.identifier.data:  # Assume it's an email
-            user = User.query.filter_by(email=form.identifier.data).first()
-        else:  # Assume it's a staff number
-            user = User.query.filter_by(student_staff_number=form.identifier.data).first()
+        user = User.query.filter_by(student_staff_number=form.student_staff_number.data).first()
         
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember.data)
+            flash('Logged in successfully!', 'success')
             
-            # Verify the login method matches user type
-            if (user.is_staff or user.is_admin) and '@' in form.identifier.data:
-                flash('Staff/Admin must login with staff number', 'danger')
-                return redirect(url_for('main.login'))
-            elif not (user.is_staff or user.is_admin) and not '@' in form.identifier.data:
-                flash('Students must login with email', 'danger')
-                return redirect(url_for('main.login'))
-                
-            next_page = request.args.get('next')
             if user.is_admin:
-                return redirect(next_page or url_for('admin.admin_dashboard'))
+                return redirect(url_for('admin.admin_dashboard'))
             elif user.is_staff:
-                return redirect(next_page or url_for('staff.staff_dashboard'))
+                return redirect(url_for('staff.staff_dashboard'))
             else:
-                return redirect(next_page or url_for('main.dashboard'))
+                return redirect(url_for('main.dashboard'))
         else:
-            flash('Invalid credentials', 'danger')
+            flash('Invalid student/staff number or password', 'danger')
     
     return render_template('login.html', form=form)
 
