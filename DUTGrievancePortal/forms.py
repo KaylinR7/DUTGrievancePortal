@@ -4,11 +4,35 @@ from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
 from flask_wtf.file import FileField, FileAllowed
 
 class LoginForm(FlaskForm):
-    student_staff_number = StringField('Student/Staff Number', 
-                                     validators=[DataRequired(), Length(min=4, max=8)])
+    email = StringField('Email', validators=[DataRequired(), Length(max=120)])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
+class RegistrationForm(FlaskForm):
+    first_name = StringField('First Name', validators=[DataRequired(), Length(max=50)])
+    last_name = StringField('Last Name', validators=[DataRequired(), Length(max=50)])
+    student_staff_number = StringField('Student/Staff Number', 
+                                     validators=[DataRequired(), Length(min=4, max=8)])
+    email = StringField('Email', validators=[DataRequired(), Length(max=120)])
+    password = PasswordField('Password', validators=[
+        DataRequired(), 
+        Length(min=8, message='Password must be at least 8 characters long')
+    ])
+    confirm_password = PasswordField('Confirm Password', validators=[
+        DataRequired(), 
+        EqualTo('password', message='Passwords must match')
+    ])
+    submit = SubmitField('Register')
+
+    def validate_student_staff_number(self, student_staff_number):
+        user = User.query.filter_by(student_staff_number=student_staff_number.data).first()
+        if user:
+            raise ValidationError('This student/staff number is already registered.')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user:
+            raise ValidationError('This email is already registered.')
 class ComplaintForm(FlaskForm):
     category = SelectField('Main Category', choices=[
         ('', '-- Select Category --'),
