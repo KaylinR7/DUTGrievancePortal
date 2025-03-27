@@ -1,4 +1,4 @@
-{% extends "Admin_Base.html" %}  <!-- Correct path -->
+{% extends "Admin_Base.html" %}
 
 {% block title %}Add User{% endblock %}
 
@@ -7,7 +7,7 @@
     <div class="card">
         <div class="card-header">
             <h2 class="card-title">Add User</h2>
-            <p class="card-description">Create a new student or staff account</p>
+            <p class="card-description">Create new student or staff account</p>
         </div>
         <div class="card-content">
             <form method="POST">
@@ -16,12 +16,37 @@
                 <div class="form-group">
                     {{ form.student_staff_number.label }}
                     <span style="color: var(--destructive);">*</span>
-                    {{ form.student_staff_number(class="form-control", placeholder="Enter 8-digit student/staff number") }}
-                    <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.25rem;">
-                        Must be 4-8 numeric characters
-                    </p>
+                    {{ form.student_staff_number(class="form-control", placeholder="Enter 8-digit number") }}
+                    <p class="form-hint">Must be 4-8 numeric characters</p>
                     {% for error in form.student_staff_number.errors %}
-                    <span style="color: var(--destructive); font-size: 0.875rem;">{{ error }}</span>
+                    <span class="error-message">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.email.label }}
+                    <span style="color: var(--destructive);">*</span>
+                    {{ form.email(class="form-control", placeholder="Enter email address") }}
+                    {% for error in form.email.errors %}
+                    <span class="error-message">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.first_name.label }}
+                    <span style="color: var(--destructive);">*</span>
+                    {{ form.first_name(class="form-control", placeholder="Enter first name") }}
+                    {% for error in form.first_name.errors %}
+                    <span class="error-message">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.last_name.label }}
+                    <span style="color: var(--destructive);">*</span>
+                    {{ form.last_name(class="form-control", placeholder="Enter last name") }}
+                    {% for error in form.last_name.errors %}
+                    <span class="error-message">{{ error }}</span>
                     {% endfor %}
                 </div>
 
@@ -29,31 +54,30 @@
                     {{ form.password.label }}
                     <span style="color: var(--destructive);">*</span>
                     {{ form.password(class="form-control", placeholder="Enter password") }}
-                    <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.25rem;">
-                        Minimum 8 characters
-                    </p>
+                    <p class="form-hint">Minimum 8 characters</p>
                     {% for error in form.password.errors %}
-                    <span style="color: var(--destructive); font-size: 0.875rem;">{{ error }}</span>
+                    <span class="error-message">{{ error }}</span>
                     {% endfor %}
                 </div>
 
                 <div class="form-group">
-                    <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                        {{ form.is_staff(class="form-check-input", style="margin-right: 0.5rem;") }}
+                    <div class="checkbox-group">
+                        {{ form.is_staff(class="form-check-input") }}
                         {{ form.is_staff.label(class="form-check-label") }}
                     </div>
-                    <p style="font-size: 0.75rem; color: var(--muted-foreground);">
-                        Check for staff/admin users
-                    </p>
+                    <div class="checkbox-group">
+                        {{ form.is_admin(class="form-check-input") }}
+                        {{ form.is_admin.label(class="form-check-label") }}
+                    </div>
+                    <p class="form-hint">Check appropriate privileges</p>
                 </div>
 
-                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-                    <button type="submit" class="btn btn-primary" style="flex: 1;">Add User</button>
-                    <a href="{{ url_for('admin.admin_database') }}" class="btn btn-outline" style="flex: 1;">Cancel</a>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create User</button>
+                    <a href="{{ url_for('admin.admin_database') }}" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>
         </div>
     </div>
 </div>
 {% endblock %}
-
