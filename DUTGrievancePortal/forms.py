@@ -4,11 +4,13 @@ from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
 from flask_wtf.file import FileField, FileAllowed
 from .models import User  # Add this import
 
-class LoginForm(FlaskForm):
-    email = StringField('Email or Staff Code', validators=[DataRequired(), Length(max=120)])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Login')
+from wtforms import StringField, PasswordField, BooleanField, validators
 
+class LoginForm(FlaskForm):
+    # Change from 'email' to 'identifier'
+    identifier = StringField('Email or Staff Number', validators=[validators.InputRequired()])
+    password = PasswordField('Password', validators=[validators.InputRequired()])
+    remember = BooleanField('Remember Me')
 class RegistrationForm(FlaskForm):
     first_name = StringField('First Name', validators=[DataRequired(), Length(max=50)])
     last_name = StringField('Last Name', validators=[DataRequired(), Length(max=50)])
