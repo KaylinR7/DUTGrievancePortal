@@ -66,10 +66,23 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        # Check if identifier is email (students) or staff number (staff/admin)
+        if '@' in form.identifier.data:  # Assume it's an email
+            user = User.query.filter_by(email=form.identifier.data).first()
+        else:  # Assume it's a staff number
+            user = User.query.filter_by(student_staff_number=form.identifier.data).first()
+        
         if user and user.check_password(form.password.data):
-            login_user(user)
+            login_user(user, remember=form.remember.data)
             
+            # Verify the login method matches user type
+            if (user.is_staff or user.is_admin) and '@' in form.identifier.data:
+                flash('Staff/Admin must login with staff number', 'danger')
+                return redirect(url_for('main.login'))
+            elif not (user.is_staff or user.is_admin) and not '@' in form.identifier.data:
+                flash('Students must login with email', 'danger')
+                return redirect(url_for('main.login'))
+                
             next_page = request.args.get('next')
             if user.is_admin:
                 return redirect(next_page or url_for('admin.admin_dashboard'))
@@ -78,7 +91,7 @@ def login():
             else:
                 return redirect(next_page or url_for('main.dashboard'))
         else:
-            flash('Invalid email or password', 'danger')
+            flash('Invalid credentials', 'danger')
     
     return render_template('login.html', form=form)
 
@@ -89,6 +102,15 @@ def register():
     
     form = RegistrationForm()
     if form.validate_on_submit():
+        # Students must register with email, staff/admin are created by admin
+        if '@' not in form.email.data:
+            flash('Students must register with email address', 'danger')
+            return redirect(url_for('main.register'))
+            
+        if User.query.filter_by(email=form.email.data).first():
+            flash('Email already registered', 'danger')
+            return redirect(url_for('main.register'))
+            
         user = User(
             first_name=form.first_name.data,
             last_name=form.last_name.data,
@@ -102,10 +124,12 @@ def register():
         db.session.add(user)
         db.session.commit()
         
-        flash('Your account has been created! You can now log in.', 'success')
+        flash('Registration successful! Please login.', 'success')
         return redirect(url_for('main.login'))
     
     return render_template('register.html', form=form)
+    
+    
 @main_bp.route('/logout')
 @login_required
 def logout():
