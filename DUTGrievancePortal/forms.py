@@ -53,15 +53,29 @@ class ComplaintForm(FlaskForm):
     sub_topic = SelectField('Sub-topic', choices=[], validate_choice=False)
     subject_line = StringField('Subject Line', validators=[DataRequired()])
     description = TextAreaField('Complaint Details', validators=[DataRequired()])
-    attachment = FileField('Attachment (optional)', validators=[
-        FileAllowed(['pdf', 'doc', 'docx', 'jpg', 'png'], 'Allowed formats: PDF, DOC, JPG, PNG')
-    ])
     submit = SubmitField('Submit')
 
 class EditUserForm(FlaskForm):
-    student_staff_number = StringField('Student/Staff Number', validators=[DataRequired(), Length(min=4, max=8)])
+    first_name = StringField('First Name', validators=[
+        DataRequired(),
+        Length(max=50)
+    ])
+    last_name = StringField('Last Name', validators=[
+        DataRequired(),
+        Length(max=50)
+    ])
+    student_staff_number = StringField('Student/Staff Number', validators=[
+        DataRequired(),
+        Length(min=4, max=8)
+    ])
+    email = StringField('Email', validators=[
+        DataRequired(),
+        Email(),
+        Length(max=120)
+    ])
     is_staff = BooleanField('Is Staff')
-
+    submit = SubmitField('Update User')
+    
 class EditComplaintForm(FlaskForm):
     category = StringField('Category', validators=[DataRequired()])
     sub_topic = StringField('Sub Topic', validators=[DataRequired()])
@@ -76,10 +90,37 @@ class EditNotificationForm(FlaskForm):
     is_read = BooleanField('Is Read')
 
 class AddUserForm(FlaskForm):
-     student_staff_number = StringField('Student/Staff Number', validators=[DataRequired(), Length(min=4, max=8)])
-     is_staff = BooleanField('Is Staff')
-     password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
-    # ... other fields ...
+    first_name = StringField('First Name', validators=[
+        DataRequired(),
+        Length(max=50, message="First name cannot exceed 50 characters")
+    ])
+    last_name = StringField('Last Name', validators=[
+        DataRequired(),
+        Length(max=50, message="Last name cannot exceed 50 characters")
+    ])
+    student_staff_number = StringField('Student/Staff Number', validators=[
+        DataRequired(),
+        Length(min=4, max=8, message="Number must be between 4-8 characters")
+    ])
+    email = StringField('Email', validators=[
+        DataRequired(),
+        Email(),
+        Length(max=120, message="Email cannot exceed 120 characters")
+    ])
+    is_staff = BooleanField('Is Staff')
+    password = PasswordField('Password', validators=[
+        DataRequired(),
+        Length(min=8, message="Password must be at least 8 characters")
+    ])
+    submit = SubmitField('Add User')
+
+    def validate_student_staff_number(self, field):
+        if User.query.filter_by(student_staff_number=field.data).first():
+            raise ValidationError('This student/staff number is already registered.')
+
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first():
+            raise ValidationError('This email is already registered.')
 
 class AddComplaintForm(FlaskForm):
     category = StringField('Category', validators=[DataRequired()])
