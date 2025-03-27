@@ -75,14 +75,10 @@ class EditNotificationForm(FlaskForm):
     message = StringField('Message', validators=[DataRequired()])
     is_read = BooleanField('Is Read')
 
-class User(FlaskForm):
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(50), nullable=False)
-    last_name = db.Column(db.String(50), nullable=False)
-    student_staff_number = db.Column(db.String(8), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-    is_staff = db.Column(db.Boolean, default=False)
+class AddUserForm(FlaskForm):
+     student_staff_number = StringField('Student/Staff Number', validators=[DataRequired(), Length(min=4, max=8)])
+     is_staff = BooleanField('Is Staff')
+     password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
     # ... other fields ...
 
 class AddComplaintForm(FlaskForm):
