@@ -5,27 +5,24 @@
     <h2>Login</h2>
     <p class="card-description">Enter your credentials to access your account</p>
 
-    <form method="POST" action="{{ url_for('main.login') }}">
-        {{ form.hidden_tag() }}
-
-        <div class="form-group">
-            {{ form.email.label }}
-            {{ form.email(class="form-control", placeholder="Enter your email") }}
-            {% for error in form.email.errors %}
-            <span class="text-danger">{{ error }}</span>
-            {% endfor %}
-        </div>
-
-        <div class="form-group">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                {{ form.password.label }}
-                <a href="#" class="text-primary" style="font-size: 0.875rem;"></a>
-            </div>
-            {{ form.password(class="form-control") }}
-            {% for error in form.password.errors %}
-            <span class="text-danger">{{ error }}</span>
-            {% endfor %}
-        </div>
+   <div class="form-group">
+        {{ form.identifier.label }}
+        {{ form.identifier(class="form-control", placeholder="Email (students) or Staff Number (staff/admin)") }}
+        <small class="form-text text-muted">
+            Students: Use your email address<br>
+            Staff/Admin: Use your staff number
+        </small>
+    </div>
+    
+    <div class="form-group">
+        {{ form.password.label }}
+        {{ form.password(class="form-control") }}
+    </div>
+    
+    <div class="form-group form-check">
+        {{ form.remember(class="form-check-input") }}
+        {{ form.remember.label(class="form-check-label") }}
+    </div>
 
         <div class="form-group">
             {{ form.submit(class="btn btn-primary", style="width: 100%;") }}
