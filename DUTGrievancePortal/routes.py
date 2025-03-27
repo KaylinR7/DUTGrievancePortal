@@ -66,7 +66,7 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(student_staff_number=form.student_staff_number.data).first()
+        user = User.query.filter_by(email=form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user)
             
@@ -78,10 +78,34 @@ def login():
             else:
                 return redirect(next_page or url_for('main.dashboard'))
         else:
-            flash('Invalid credentials', 'danger')
+            flash('Invalid email or password', 'danger')
     
     return render_template('login.html', form=form)
 
+@main_bp.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+    
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            student_staff_number=form.student_staff_number.data,
+            email=form.email.data,
+            is_staff=False,
+            is_admin=False
+        )
+        user.password = form.password.data
+        
+        db.session.add(user)
+        db.session.commit()
+        
+        flash('Your account has been created! You can now log in.', 'success')
+        return redirect(url_for('main.login'))
+    
+    return render_template('register.html', form=form)
 @main_bp.route('/logout')
 @login_required
 def logout():
