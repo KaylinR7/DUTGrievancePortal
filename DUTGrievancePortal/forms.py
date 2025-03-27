@@ -104,6 +104,7 @@ class AddUserForm(FlaskForm):
         Length(max=120, message="Email cannot exceed 120 characters")
     ])
     is_staff = BooleanField('Is Staff')
+    is_admin = BooleanField('Is Admin')  # This was missing
     password = PasswordField('Password', validators=[
         DataRequired(),
         Length(min=8, message="Password must be at least 8 characters")
