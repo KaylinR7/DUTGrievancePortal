@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_user, logout_user, current_user, login_required
 from .extensions import db, login_manager  
 from .models import User, Complaint, Notification
-from .forms import ComplaintForm, LoginForm
+from .forms import ComplaintForm, LoginForm , RegistrationForm
 from datetime import datetime, timedelta
 from .utils import generate_reference_id, create_notification
 from werkzeug.utils import secure_filename
