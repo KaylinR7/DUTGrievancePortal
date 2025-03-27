@@ -6,9 +6,13 @@ from .models import User  # Add this import
 
 from wtforms import StringField, PasswordField, BooleanField, validators
 
+from wtforms import StringField, PasswordField, BooleanField, validators
+
 class LoginForm(FlaskForm):
-    # Change from 'email' to 'identifier'
-    identifier = StringField('Email or Staff Number', validators=[validators.InputRequired()])
+    student_staff_number = StringField('Student/Staff Number', validators=[
+        validators.InputRequired(),
+        validators.Length(min=6, message="Number must be at least 8 characters")
+    ])
     password = PasswordField('Password', validators=[validators.InputRequired()])
     remember = BooleanField('Remember Me')
 class RegistrationForm(FlaskForm):
