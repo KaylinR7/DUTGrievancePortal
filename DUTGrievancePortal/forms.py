@@ -75,7 +75,7 @@ class EditNotificationForm(FlaskForm):
     message = StringField('Message', validators=[DataRequired()])
     is_read = BooleanField('Is Read')
 
-class User(db.Model):
+class User(FlaskForm):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
