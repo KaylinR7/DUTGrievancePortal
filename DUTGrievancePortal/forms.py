@@ -3,6 +3,7 @@ from wtforms import StringField, SelectField, SubmitField, PasswordField, TextAr
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
 from flask_wtf.file import FileField, FileAllowed
 from .models import User  # Add this import
+from wtforms.validators import Email  # Add this import
 
 from wtforms import StringField, PasswordField, BooleanField, validators
 
@@ -56,24 +57,19 @@ class ComplaintForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class EditUserForm(FlaskForm):
-    first_name = StringField('First Name', validators=[
-        DataRequired(),
-        Length(max=50)
-    ])
-    last_name = StringField('Last Name', validators=[
-        DataRequired(),
-        Length(max=50)
-    ])
     student_staff_number = StringField('Student/Staff Number', validators=[
         DataRequired(),
         Length(min=4, max=8)
     ])
     email = StringField('Email', validators=[
-        DataRequired(),
-        Email(),
-        Length(max=120)
+        Email(),  # Now properly imported
+        DataRequired()
     ])
+    first_name = StringField('First Name', validators=[DataRequired()])
+    last_name = StringField('Last Name', validators=[DataRequired()])
+    password = PasswordField('Password')
     is_staff = BooleanField('Is Staff')
+    is_admin = BooleanField('Is Admin')
     submit = SubmitField('Update User')
     
 class EditComplaintForm(FlaskForm):
