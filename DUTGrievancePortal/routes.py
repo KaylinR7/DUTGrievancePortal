@@ -137,13 +137,6 @@ def submit_complaint():
             form.sub_topic.data if form.category.data != 'general' else None
         )
         
-     
-        attachment_path = None
-        if form.attachment.data:
-            filename = secure_filename(f"{ref_id}_{form.attachment.data.filename}")
-            save_path = os.path.join(current_app.root_path, 'static/uploads', filename)
-            form.attachment.data.save(save_path)
-            attachment_path = f"uploads/{filename}"
         
         new_complaint = Complaint(
             category=form.category.data,
@@ -151,7 +144,6 @@ def submit_complaint():
             subject_line=form.subject_line.data,
             description=form.description.data,
             reference_id=ref_id,
-            attachment_path=attachment_path,
             user_id=current_user.id
         )
         
