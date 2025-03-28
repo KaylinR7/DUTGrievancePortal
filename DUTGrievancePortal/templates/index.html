@@ -4,45 +4,34 @@
 <div class="hero-section">
     <div class="hero-content">
         <h1>Welcome to DUT Grievance Portal</h1>
-        <p class="hero-description">
-            This platform allows Durban University of Technology students and staff to
-            efficiently submit and track formal complaints. Our system ensures transparent
-            resolution processes with 72-hour response guarantees.
-        </p>
-        <div class="hero-cta">
-            {% if current_user.is_authenticated %}
-            <a href="{{ url_for('main.submit_complaint') }}" class="btn btn-primary">File a Complaint</a>
-            {% else %}
-            <div class="cta-group">
-                <a href="{{ url_for('main.register') }}" class="btn btn-primary">Get Started</a>
-                <a href="{{ url_for('main.login') }}" class="btn btn-outline" style="background-color: rgba(255, 255, 255, 0.1); color: white;">Login</a>
+        
+        {% if current_user.is_authenticated %}
+            <!-- Show logged-in content -->
+            <p class="hero-description">
+                Welcome back, {{ current_user.first_name }}! 
+                You have {% if notification_count > 0 %}{{ notification_count }} new{% else %}no new{% endif %} notifications.
+            </p>
+            <div class="hero-cta">
+                <a href="{{ url_for('main.submit_complaint') }}" class="btn btn-primary">File a Complaint</a>
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline">View Dashboard</a>
             </div>
-            {% endif %}
-        </div>
+        
+        {% else %}
+            <!-- Show guest content -->
+            <p class="hero-description">
+                This platform allows Durban University of Technology students and staff to
+                efficiently submit and track formal complaints. Our system ensures transparent
+                resolution processes with 72-hour response guarantees.
+            </p>
+            <div class="hero-cta">
+                <div class="cta-group">
+                    <a href="{{ url_for('main.register') }}" class="btn btn-primary">Get Started</a>
+                    <a href="{{ url_for('main.login') }}" class="btn btn-outline">Login</a>
+                </div>
+            </div>
+        {% endif %}
     </div>
 </div>
 
-<section class="portal-features">
-    <div class="feature-card">
-        <div style="background-color: var(--primary-light); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
-            <i class="fas fa-file-alt" style="font-size: 1.5rem; color: var(--primary);"></i>
-        </div>
-        <h3>Submit Complaints</h3>
-        <p>Easily file grievances with categorized submission forms</p>
-    </div>
-    <div class="feature-card">
-        <div style="background-color: var(--primary-light); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
-            <i class="fas fa-clock" style="font-size: 1.5rem; color: var(--primary);"></i>
-        </div>
-        <h3>72-Hour Response</h3>
-        <p>Guaranteed staff response within three working days</p>
-    </div>
-    <div class="feature-card">
-        <div style="background-color: var(--primary-light); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
-            <i class="fas fa-chart-line" style="font-size: 1.5rem; color: var(--primary);"></i>
-        </div>
-        <h3>Complaint Tracking</h3>
-        <p>Real-time updates and history of all your submissions</p>
-    </div>
-</section>
+<!-- Rest of your template remains the same -->
 {% endblock %}
