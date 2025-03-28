@@ -500,14 +500,7 @@ def logout():
 def is_admin(user):
     return user.is_admin
 
-@admin_bp.route('/dashboard')
-@login_required
 
-def admin_dashboard():
-    if not current_user.is_admin:
-        flash('Unauthorized access', 'danger')
-        return redirect(url_for('main.dashboard'))
-    return render_template('admin_dashboard.html')
 
 @admin_bp.route('/dashboard')
 @login_required
