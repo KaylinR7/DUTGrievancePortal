@@ -525,25 +525,26 @@ def admin_dashboard():
     )
 
 @admin_bp.route('/database')
- def admin_database():
-     # Query all users, complaints, and notifications with pagination
-     page = request.args.get('page', 1, type=int)  # Get the current page number
-     per_page = 10  # Number of items per page
- 
-     users = User.query.paginate(page=page, per_page=per_page)
-     complaints = Complaint.query.paginate(page=page, per_page=per_page)
-     notifications = Notification.query.paginate(page=page, per_page=per_page)
- 
-     feedback = Feedback(
-         complaint_id=complaint_id,
-         user_id=user_id,
-         rating=int(rating),
-         comments=comments
-     return render_template(
-         'admin_database.html',
-         users=users,
-         complaints=complaints,
-         notifications=notifications
+@login_required
+def admin_database():
+    if not current_user.is_admin:
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('main.dashboard'))
+
+    # Query all users, complaints, and notifications with pagination
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+
+    users = User.query.paginate(page=page, per_page=per_page)
+    complaints = Complaint.query.paginate(page=page, per_page=per_page)
+    notifications = Notification.query.paginate(page=page, per_page=per_page)
+
+    return render_template(  # ✅ Corrected syntax
+        'admin_database.html',
+        users=users,
+        complaints=complaints,
+        notifications=notifications
+    )
 
 
 # In your routes.py (add_user route)
