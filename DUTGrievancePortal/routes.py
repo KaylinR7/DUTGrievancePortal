@@ -527,18 +527,23 @@ def admin_database():
     )
 
 
-@admin_bp.route('/database/user/add', methods=['GET', 'POST'])
+# In your routes.py (add_user route)
+@admin.route('/admin/database/user/add', methods=['GET', 'POST'])
 def add_user():
     form = AddUserForm()
     if form.validate_on_submit():
-        user = User(
+        new_user = User(
             student_staff_number=form.student_staff_number.data,
-            is_staff=form.is_staff.data
+            email=form.email.data,  # Missing in your implementation
+            first_name=form.first_name.data,  # Missing in your implementation
+            last_name=form.last_name.data,  # Missing in your implementation
+            password=form.password.data,  # This should use the password setter
+            is_staff=form.is_staff.data,
+            is_admin=form.is_admin.data
         )
-        user.password = form.password.data  # Use the property setter instead
-        db.session.add(user)
+        db.session.add(new_user)
         db.session.commit()
-        flash('User added successfully!', 'success')
+        flash('User created successfully!', 'success')
         return redirect(url_for('admin.admin_database'))
     return render_template('add_user.html', form=form)
 
@@ -578,12 +583,26 @@ def add_notification():
 @admin_bp.route('/database/user/edit/<int:id>', methods=['GET', 'POST'])
 def edit_user(id):
     user = User.query.get_or_404(id)
-    form = EditUserForm(obj=user)  
+    form = EditUserForm(obj=user)
+    
     if form.validate_on_submit():
-        form.populate_obj(user)  
+        # Manually update fields instead of using populate_obj() 
+        # to handle password separately
+        user.student_staff_number = form.student_staff_number.data
+        user.email = form.email.data
+        user.first_name = form.first_name.data
+        user.last_name = form.last_name.data
+        user.is_staff = form.is_staff.data
+        user.is_admin = form.is_admin.data
+        
+        # Only update password if a new one was entered
+        if form.password.data:  # Check if password field is not empty
+            user.password = form.password.data  # This uses the password setter
+        
         db.session.commit()
         flash('User updated successfully!', 'success')
         return redirect(url_for('admin.admin_database'))
+    
     return render_template('edit_user.html', form=form, user=user)
 
 
