@@ -16,8 +16,8 @@
                 <div class="form-group">
                     {{ form.student_staff_number.label }}
                     <span style="color: var(--destructive);">*</span>
-                    {{ form.student_staff_number(class="form-control", placeholder="Enter 8-digit number") }}
-                    <p class="form-hint">Must be 4-8 numeric characters</p>
+                    {{ form.student_staff_number(class="form-control", placeholder="Enter 5 OR 8-digit number") }}
+                    <p class="form-hint">Must be 5-8 numeric characters</p>
                     {% for error in form.student_staff_number.errors %}
                     <span class="error-message">{{ error }}</span>
                     {% endfor %}
