@@ -51,7 +51,7 @@ def index():
         elif current_user.is_staff:
             return redirect(url_for('staff.staff_dashboard'))
         else:
-            return redirect(url_for('main.dashboard'))
+           return render_template('index.html')
     return redirect(url_for('main.login'))
 
 @main_bp.route('/login', methods=['GET', 'POST'])
