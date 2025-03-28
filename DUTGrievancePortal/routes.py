@@ -157,6 +157,11 @@ def submit_complaint():
 @main_bp.route('/dashboard')
 @login_required
 def dashboard():
+    # Get real-time counts from the database
+    active_complaints = Complaint.query.filter_by(user_id=current_user.id, status='Pending').count()
+    total_complaints = Complaint.query.filter_by(user_id=current_user.id).count()
+    resolved_complaints = Complaint.query.filter_by(user_id=current_user.id, status='Resolved').count()
+    
     now = datetime.utcnow()
     current_complaints = Complaint.query.filter_by(user_id=current_user.id, status='Pending').all()
     complaint_history = Complaint.query.filter_by(user_id=current_user.id).all()
@@ -165,6 +170,9 @@ def dashboard():
         'dashboard.html',
         current_complaints=current_complaints,
         complaint_history=complaint_history,
+        active_complaints=active_complaints,
+        total_complaints=total_complaints,
+        resolved_complaints=resolved_complaints,
         now=now,
         timedelta=timedelta
     )
@@ -501,21 +509,23 @@ def admin_dashboard():
         return redirect(url_for('main.dashboard'))
     return render_template('admin_dashboard.html')
 
-@admin_bp.route('/database')
-def admin_database():
-   
-    page = request.args.get('page', 1, type=int)  
-    per_page = 10  
-
-    users = User.query.paginate(page=page, per_page=per_page)
-    complaints = Complaint.query.paginate(page=page, per_page=per_page)
-    notifications = Notification.query.paginate(page=page, per_page=per_page)
-
+@admin_bp.route('/dashboard')
+@login_required
+def admin_dashboard():
+    if not current_user.is_admin:
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('main.dashboard'))
+    
+    # Get counts for the admin dashboard
+    users_count = User.query.count()
+    complaints_count = Complaint.query.count()
+    active_complaints_count = Complaint.query.filter(Complaint.status != 'Resolved').count()
+    
     return render_template(
-        'admin_database.html',
-        users=users,
-        complaints=complaints,
-        notifications=notifications
+        'admin_dashboard.html',
+        users_count=users_count,
+        complaints_count=complaints_count,
+        active_complaints_count=active_complaints_count
     )
 
 
