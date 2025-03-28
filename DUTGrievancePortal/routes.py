@@ -528,7 +528,7 @@ def admin_database():
 
 
 # In your routes.py (add_user route)
-@admin.route('/admin/database/user/add', methods=['GET', 'POST'])
+@admin_bp.route('/admin/database/user/add', methods=['GET', 'POST'])
 def add_user():
     form = AddUserForm()
     if form.validate_on_submit():
