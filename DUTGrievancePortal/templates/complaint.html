@@ -46,25 +46,7 @@
                 {% endfor %}
             </div>
 
-            <div class="form-group">
-                {{ form.attachment.label }} (Optional)
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    {{ form.attachment(class="form-control-file", style="display: none;", id="file-input") }}
-                    <button type="button" class="btn btn-outline" onclick="document.getElementById('file-input').click();" style="flex: 1;">
-                        <i class="fas fa-upload"></i>
-                        <span id="file-name">Choose file</span>
-                    </button>
-                    <button type="button" id="clear-file" class="btn btn-outline" style="display: none;">
-                        Clear
-                    </button>
-                </div>
-                <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.5rem;">
-                    Supported formats: PDF, DOC, JPG, PNG (max 5MB)
-                </p>
-                {% for error in form.attachment.errors %}
-                <span style="color: var(--destructive); font-size: 0.875rem;">{{ error }}</span>
-                {% endfor %}
-            </div>
+           
 
             {{ form.submit(class="btn btn-primary", style="width: 100%;") }}
         </form>
