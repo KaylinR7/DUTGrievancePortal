@@ -77,7 +77,7 @@ def login():
             elif user.is_staff:
                 return redirect(url_for('staff.staff_dashboard'))
             else:
-                return redirect(url_for('main.dashboard'))
+                return redirect(url_for('main.index'))
         else:
             flash('Invalid student/staff number or password', 'danger')
     
