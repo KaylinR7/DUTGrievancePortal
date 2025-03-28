@@ -62,28 +62,54 @@
         // Clear existing options
         subTopicSelect.innerHTML = '';
 
-        // Define sub-topics structure
+        // Enhanced sub-topics structure
         const subTopics = {
             academics: [
-                ['academics_registration', 'Registration Issues'],
-                ['academics_results', 'Exam Results']
+                ['academics_registration', 'Registration & Enrollment'],
+                ['academics_results', 'Exam Results & Grading'],
+                ['academics_curriculum', 'Curriculum Issues'],
+                ['academics_advising', 'Academic Advising'],
+                ['academics_schedule', 'Class Scheduling'],
+                ['academics_online', 'Online Learning Platform'],
+                ['academics_credit', 'Credit Transfer Issues']
             ],
             faculty: [
                 ['faculty_teaching', 'Teaching Quality'],
-                ['faculty_resources', 'Faculty Resources']
+                ['faculty_availability', 'Staff Availability'],
+                ['faculty_communication', 'Communication Issues'],
+                ['faculty_conduct', 'Professional Conduct'],
+                ['faculty_resources', 'Learning Resources'],
+                ['faculty_feedback', 'Feedback Implementation'],
+                ['faculty_assignment', 'Assignment Handling']
             ],
             maintenance: [
                 ['maintenance_cleaning', 'Cleaning Services'],
-                ['maintenance_infrastructure', 'Building Issues']
+                ['maintenance_infrastructure', 'Building Infrastructure'],
+                ['maintenance_equipment', 'Equipment Maintenance'],
+                ['maintenance_grounds', 'Grounds & Landscaping'],
+                ['maintenance_electrical', 'Electrical Issues'],
+                ['maintenance_plumbing', 'Plumbing Issues'],
+                ['maintenance_heating', 'HVAC Systems']
             ],
             health_safety: [
                 ['health_safety_emergency', 'Emergency Response'],
-                ['health_safety_facilities', 'Safety Facilities']
+                ['health_safety_facilities', 'Safety Facilities'],
+                ['health_safety_hygiene', 'Sanitation & Hygiene'],
+                ['health_safety_mental', 'Mental Health Support'],
+                ['health_safety_security', 'Campus Security'],
+                ['health_safety_access', 'Accessibility Issues'],
+                ['health_safety_food', 'Food Safety']
             ],
             general: []
         };
 
         if (category && category !== 'general') {
+            // Add default "Select Sub-topic" option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = '-- Select Sub-topic --';
+            subTopicSelect.appendChild(defaultOption);
+
             subTopics[category].forEach(([value, text]) => {
                 const option = document.createElement('option');
                 option.value = value;
@@ -91,30 +117,11 @@
                 subTopicSelect.appendChild(option);
             });
             subTopicGroup.style.display = 'block';
-            // Add animation
             subTopicGroup.style.animation = 'slideInFromTop 0.3s ease-out';
         } else {
             subTopicGroup.style.display = 'none';
         }
     });
-
-    // File input handling
-    document.getElementById('file-input').addEventListener('change', function () {
-        const fileName = this.files[0] ? this.files[0].name : 'Choose file';
-        document.getElementById('file-name').textContent = fileName;
-
-        if (this.files[0]) {
-            document.getElementById('clear-file').style.display = 'block';
-        } else {
-            document.getElementById('clear-file').style.display = 'none';
-        }
-    });
-
-    document.getElementById('clear-file').addEventListener('click', function () {
-        const fileInput = document.getElementById('file-input');
-        fileInput.value = '';
-        document.getElementById('file-name').textContent = 'Choose file';
-        this.style.display = 'none';
-    });
+    // ... rest of your existing script ...
 </script>
 {% endblock %}
