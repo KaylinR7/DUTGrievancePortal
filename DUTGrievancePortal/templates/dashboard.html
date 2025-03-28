@@ -53,10 +53,18 @@
             <p class="card-description">Overview of your complaints</p>
         </div>
         <div class="card-content">
-            <!-- Replace the hardcoded values with template variables -->
-            <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">{{ active_complaints }}</div>
-            <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">{{ total_complaints }}</div>
-            <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">{{ resolved_complaints }}</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div style="border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">{{ active_complaints }}</div>
+                    <div style="color: var(--muted-foreground); font-size: 0.875rem;">Active Complaints</div>
+                </div>
+                <div style="border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">{{ total_complaints }}</div>
+                    <div style="color: var(--muted-foreground); font-size: 0.875rem;">Total Submitted</div>
+                </div>
+                <div style="border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">{{ resolved_complaints }}</div>
+                    <div style="color: var(--muted-foreground); font-size: 0.875rem;">Resolved</div>
                 </div>
             </div>
         </div>
