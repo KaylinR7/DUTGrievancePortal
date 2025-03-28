@@ -386,6 +386,9 @@ def staff_dashboard():
         reopened_complaints_list=reopened_complaints_list  # Add this
     )
 
+
+
+
 @staff_bp.route('/complaints')
 @login_required
 def staff_complaints():
@@ -520,6 +523,27 @@ def admin_dashboard():
         complaints_count=complaints_count,
         active_complaints_count=active_complaints_count
     )
+
+@admin_bp.route('/database')
+ def admin_database():
+     # Query all users, complaints, and notifications with pagination
+     page = request.args.get('page', 1, type=int)  # Get the current page number
+     per_page = 10  # Number of items per page
+ 
+     users = User.query.paginate(page=page, per_page=per_page)
+     complaints = Complaint.query.paginate(page=page, per_page=per_page)
+     notifications = Notification.query.paginate(page=page, per_page=per_page)
+ 
+     feedback = Feedback(
+         complaint_id=complaint_id,
+         user_id=user_id,
+         rating=int(rating),
+         comments=comments
+     return render_template(
+         'admin_database.html',
+         users=users,
+         complaints=complaints,
+         notifications=notifications
 
 
 # In your routes.py (add_user route)
