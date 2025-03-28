@@ -157,29 +157,8 @@ def submit_complaint():
 @main_bp.route('/dashboard')
 @login_required
 def dashboard():
-    # Get current date/time for deadline calculations
     now = datetime.utcnow()
-    
-    # Get complaints for the current user
-    active_complaints = Complaint.query.filter(
-        Complaint.user_id == current_user.id,
-        Complaint.status.in_(['Pending', 'In Progress', 'Reopened'])
-    ).all()
-    
-    total_complaints = Complaint.query.filter_by(user_id=current_user.id).count()
-    
-    resolved_complaints = Complaint.query.filter_by(
-        user_id=current_user.id,
-        status='Resolved'
-    ).count()
-    
-    # Get current complaints for display in the table
-    current_complaints = Complaint.query.filter_by(
-        user_id=current_user.id, 
-        status='Pending'
-    ).all()
-    
-    # Get complaint history
+    current_complaints = Complaint.query.filter_by(user_id=current_user.id, status='Pending').all()
     complaint_history = Complaint.query.filter_by(user_id=current_user.id).all()
 
     return render_template(
@@ -187,13 +166,8 @@ def dashboard():
         current_complaints=current_complaints,
         complaint_history=complaint_history,
         now=now,
-        timedelta=timedelta,
-        active_complaints_count=len(active_complaints),
-        total_complaints_count=total_complaints,
-        resolved_complaints_count=resolved_complaints
+        timedelta=timedelta
     )
-
-
 
 @main_bp.route('/current-complaints')
 @login_required
@@ -524,7 +498,9 @@ def is_admin(user):
 def admin_dashboard():
     if not current_user.is_admin:
         flash('Unauthorized access', 'danger')
-        complaints_count
+        return redirect(url_for('main.dashboard'))
+    return render_template('admin_dashboard.html')
+
 @admin_bp.route('/database')
 def admin_database():
    
@@ -670,7 +646,6 @@ def delete_notification(id):
     db.session.commit()
     flash('Notification deleted successfully!', 'success')
     return redirect(url_for('admin.admin_database'))
-
 
 
 
